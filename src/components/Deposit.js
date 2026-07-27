@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { depositApi } from '../api';
 
-export default function Deposit({ onBack }) {
+export default function Deposit() {
+  const navigate = useNavigate();
+  const goBack = () => navigate('/dashboard');
   const [form, setForm] = useState({ accountNumber: '', accountHolder: '', amount: '', note: '' });
   const [submitted, setSubmitted] = useState(false);
-  const [txnId] = useState(() => 'TXN' + Date.now());
+  const [txnId, setTxnId] = useState('');
 
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    try {
+      const res = await depositApi({ ...form, amount: Number(form.amount) });
+      const data = await res.json();
+      setTxnId(data.id);
+      setSubmitted(true);
+    } catch {
+      alert('Failed to connect to server.');
+    }
   };
 
   if (submitted) {
     return (
       <div>
-        <button onClick={onBack} style={backBtnStyle}>← Back to Dashboard</button>
+        <button onClick={goBack} style={backBtnStyle}>← Back to Dashboard</button>
         <div style={{
           background: 'white', borderRadius: 16, padding: 40,
           boxShadow: '0 2px 12px rgba(0,0,0,0.07)', maxWidth: 480, textAlign: 'center',
@@ -36,7 +47,7 @@ export default function Deposit({ onBack }) {
               {txnId}
             </p>
           </div>
-          <button onClick={onBack} style={primaryBtnStyle}>Back to Dashboard</button>
+          <button onClick={goBack} style={primaryBtnStyle}>Back to Dashboard</button>
         </div>
       </div>
     );
@@ -44,7 +55,7 @@ export default function Deposit({ onBack }) {
 
   return (
     <div>
-      <button onClick={onBack} style={backBtnStyle}>← Back to Dashboard</button>
+      <button onClick={goBack} style={backBtnStyle}>← Back to Dashboard</button>
       <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>Deposit Funds</h2>
       <p style={{ color: '#64748b', marginBottom: 28, fontSize: '0.9rem' }}>
         Enter account details and deposit amount.
@@ -67,6 +78,7 @@ export default function Deposit({ onBack }) {
               value={form[f.name]} onChange={handle}
               required={f.name !== 'note'}
               min={f.name === 'amount' ? 1 : undefined}
+              onWheel={f.name === 'amount' ? (e) => e.target.blur() : undefined}
               style={inputStyle}
             />
           </div>

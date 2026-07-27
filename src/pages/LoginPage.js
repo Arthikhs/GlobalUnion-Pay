@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-const FIXED_EMPLOYEE_ID = 'EMP001';
-const FIXED_PASSWORD = 'bank@1234';
+import { loginApi } from '../api';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -12,18 +10,25 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      if (employeeId === FIXED_EMPLOYEE_ID && password === FIXED_PASSWORD) {
+    try {
+      const res = await loginApi(employeeId.trim(), password.trim());
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('employeeName', data.name);
+        localStorage.setItem('employeeId', data.employeeId);
         navigate('/dashboard');
       } else {
-        setError('Invalid Employee ID or Password.');
+        setError(data.message || 'Invalid Employee ID or Password.');
       }
-      setLoading(false);
-    }, 800);
+    } catch {
+      setError('Cannot connect to server. Is the backend running?');
+    }
+    setLoading(false);
   };
 
   return (

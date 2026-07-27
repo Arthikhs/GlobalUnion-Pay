@@ -10,6 +10,11 @@ body {
   overflow: hidden;
 }
 
+body.dashboard-page {
+  overflow: auto;
+  height: auto;
+}
+
 .login-wrapper {
   display: flex;
   height: 100vh;
