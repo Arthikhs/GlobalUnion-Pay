@@ -1,6 +1,6 @@
-# 🏦 GlobalUnion Pay — FinTech Payment Platform
+# 🏦 GlobalUnion Pay — Bank & ATM Management System
 
-A modern, enterprise-grade Employee Banking Portal & FinTech Payment Platform built with **React.js** and **Spring Boot**, designed for internal bank employee use with secure login and full core banking operations.
+A modern, enterprise-grade **Employee Banking Portal & ATM Simulation** built with **React.js** and **Spring Boot**, designed for internal bank employee use with secure login and full core banking operations.
 
 ---
 
@@ -27,6 +27,7 @@ A modern, enterprise-grade Employee Banking Portal & FinTech Payment Platform bu
 
 ## ✨ Features
 
+### 🏦 Bank Project
 - 🔐 **Secure Login** — Employee ID & Password authentication (split-screen UI) with JWT
 - 🏦 **Bank Details** — View account balance, IFSC, branch, revenue & transaction overview
 - 👤 **Create & Edit Account** — Open savings/current accounts, edit or delete existing accounts
@@ -37,17 +38,74 @@ A modern, enterprise-grade Employee Banking Portal & FinTech Payment Platform bu
 - 💳 **Generate ATM Card** — Generate and download ATM card PDF for any customer
 - 📱 **Responsive Design** — Optimized for desktop/laptop
 
+### 🏧 ATM Project
+- 💳 **Card Insert Simulation** — Realistic ATM card insert flow
+- 🔢 **PIN Authentication** — Secure PIN entry with masked input
+- 💰 **Cash Withdrawal** — Select or enter custom withdrawal amount
+- 🏦 **Balance Enquiry** — Check account balance instantly
+- 🔄 **Mini Statement** — View recent transactions
+- 📌 **PIN Change** — Change ATM PIN securely
+- 🖥️ **Realistic ATM UI** — Full ATM machine simulation interface
+
 ---
 
-## 🖥️ Screenshots
+## 📁 Project Structure
 
-### Login Page
-- Left panel: SecureBank branding & logo
-- Right panel: Employee ID + Password login form
-
-### Dashboard
-- Top navbar with employee greeting & logout
-- 7 feature cards: Bank Details, Deposit & Withdrawal, Create & Edit Account, Customer Details, Loan Details, Generate ATM Card, Fund Transfer
+```
+GlobalUnion-Pay/
+├── src/                          # 🏦 Bank Project (React)
+│   ├── components/
+│   │   ├── BankDetails.js        # Account info & transaction overview
+│   │   ├── CreateAccount.js      # Create / Edit / Delete account
+│   │   ├── Deposit.js            # Deposit & Withdrawal
+│   │   ├── FundTransfer.js       # Account-to-account fund transfer
+│   │   ├── CustomerDetails.js    # Customer list & profile view
+│   │   ├── LoanDetails.js        # Loan issuance & management
+│   │   ├── ATMCard.js            # ATM card generator & PDF download
+│   │   └── ATMMachine.js         # ATM simulation component
+│   ├── pages/
+│   │   ├── LoginPage.js          # Split-screen login
+│   │   └── Dashboard.js          # Main dashboard + navbar
+│   ├── App.js                    # Routes
+│   ├── api.js                    # All API calls
+│   ├── AccountContext.js         # Account state context
+│   ├── TransactionContext.js     # Transaction state context
+│   ├── index.js                  # Entry point
+│   └── index.css                 # Global styles
+│
+├── ATM-Project/                  # 🏧 ATM Project (React)
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── ATMMachine.js     # Full ATM simulation UI
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   └── index.css
+│   └── package.json
+│
+├── backend/                      # ☕ Spring Boot Backend
+│   └── src/main/java/com/globalunion/pay/
+│       ├── controller/
+│       │   ├── AuthController.java
+│       │   ├── AccountController.java
+│       │   ├── TransactionController.java
+│       │   └── LoanController.java
+│       ├── model/
+│       │   ├── Account.java
+│       │   ├── Employee.java
+│       │   ├── Transaction.java
+│       │   └── Loan.java
+│       ├── repository/
+│       ├── security/
+│       │   ├── JwtUtil.java
+│       │   ├── JwtFilter.java
+│       │   └── SecurityConfig.java
+│       ├── DataSeeder.java
+│       └── PayApplication.java
+│
+├── public/
+├── package.json
+└── README.md
+```
 
 ---
 
@@ -59,32 +117,34 @@ A modern, enterprise-grade Employee Banking Portal & FinTech Payment Platform bu
 - Java 17+
 - Maven
 
-### Frontend
+### 1️⃣ Backend
 
-```bash
-# Clone the repository
-git clone https://github.com/Arthikhs/GlobalUnion-Pay.git
-
-# Navigate to project folder
-cd GlobalUnion-Pay
-
-# Install dependencies
-npm install
-
-# Start development server
-npm start
-```
-
-App runs at `http://localhost:3000`
-
-### Backend
-
-```bash
+```powershell
 cd backend
 mvn spring-boot:run
 ```
 
 API runs at `http://localhost:8080`
+
+### 2️⃣ Bank Project (Terminal 1)
+
+```powershell
+cd "GlobalUnion-Pay"
+npm install
+npm start
+```
+
+Runs at `http://localhost:3000`
+
+### 3️⃣ ATM Project (Terminal 2)
+
+```powershell
+cd "GlobalUnion-Pay\ATM-Project"
+npm install
+$env:PORT=3001; npm start
+```
+
+Runs at `http://localhost:3001`
 
 ---
 
@@ -94,52 +154,6 @@ API runs at `http://localhost:8080`
 |-------|-------|
 | Employee ID | `EMP001` |
 | Password | `bank@1234` |
-
----
-
-## 📁 Project Structure
-
-```
-src/
-├── components/
-│   ├── BankDetails.js       # Account info & transaction overview
-│   ├── CreateAccount.js     # Create / Edit / Delete account
-│   ├── Deposit.js           # Deposit & Withdrawal
-│   ├── FundTransfer.js      # Account-to-account fund transfer
-│   ├── CustomerDetails.js   # Customer list & profile view
-│   ├── LoanDetails.js       # Loan issuance & management
-│   ├── ATMCard.js           # ATM card generator & PDF download
-│   └── ATMMachine.js        # ATM simulation
-├── pages/
-│   ├── LoginPage.js         # Split-screen login
-│   └── Dashboard.js         # Main dashboard + navbar
-├── App.js                   # Routes
-├── api.js                   # All API calls
-├── AccountContext.js        # Account state context
-├── TransactionContext.js    # Transaction state context
-├── index.js                 # Entry point
-└── index.css                # Global styles
-
-backend/
-└── src/main/java/com/globalunion/pay/
-    ├── controller/
-    │   ├── AuthController.java
-    │   ├── AccountController.java
-    │   ├── TransactionController.java
-    │   └── LoanController.java
-    ├── model/
-    │   ├── Account.java
-    │   ├── Employee.java
-    │   ├── Transaction.java
-    │   └── Loan.java
-    ├── repository/
-    ├── security/
-    │   ├── JwtUtil.java
-    │   ├── JwtFilter.java
-    │   └── SecurityConfig.java
-    ├── DataSeeder.java
-    └── PayApplication.java
-```
 
 ---
 
@@ -163,25 +177,10 @@ backend/
 
 ---
 
-## 👨‍💻 Developer
-
-**Arthikhs** — Full Stack Java Developer
-
-- **Languages:** Java, JavaScript, TypeScript
-- **Backend:** Spring Boot, Spring Security, Spring Data JPA, Hibernate, REST APIs, JWT Authentication, Microservices, Spring Batch, Spring WebSocket
-- **Frontend:** React.js, Next.js, Tailwind CSS
-- **Databases:** MySQL, PostgreSQL, Redis
-- **Messaging:** Apache Kafka
-- **Cloud & DevOps:** Docker, Kubernetes, AWS (EC2, S3, RDS), GitHub Actions, CI/CD
-- **Testing & Tools:** Git, GitHub, JUnit, Postman
-- **Core CS:** OOP, Data Structures & Algorithms, DBMS, Operating Systems, System Design
-
----
-
 ## 🏗️ Architecture (Microservices Vision)
 
 ```
-React.js Frontend
+React.js Frontend (Bank + ATM)
        ↓
 Spring Boot API Gateway
        ↓
@@ -200,6 +199,21 @@ Spring Boot API Gateway
        ↓
   AWS (EC2, RDS, S3)
 ```
+
+---
+
+## 👨‍💻 Developer
+
+**Arthikhs** — Full Stack Java Developer
+
+- **Languages:** Java, JavaScript, TypeScript
+- **Backend:** Spring Boot, Spring Security, Spring Data JPA, Hibernate, REST APIs, JWT Authentication, Microservices, Spring Batch, Spring WebSocket
+- **Frontend:** React.js, Next.js, Tailwind CSS
+- **Databases:** MySQL, PostgreSQL, Redis
+- **Messaging:** Apache Kafka
+- **Cloud & DevOps:** Docker, Kubernetes, AWS (EC2, S3, RDS), GitHub Actions, CI/CD
+- **Testing & Tools:** Git, GitHub, JUnit, Postman
+- **Core CS:** OOP, Data Structures & Algorithms, DBMS, Operating Systems, System Design
 
 ---
 
