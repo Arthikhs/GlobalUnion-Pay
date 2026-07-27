@@ -32,6 +32,13 @@ public class AccountController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/by-phone/{phone}")
+    public ResponseEntity<?> getByPhone(@PathVariable String phone) {
+        return accountRepo.findByPhone(phone)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Account updated) {
         return accountRepo.findById(id).map(existing -> {
@@ -71,6 +78,7 @@ public class AccountController {
         String createdOn = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
         account.setAccountNumber(accNumber);
         account.setCreatedOn(createdOn);
+        account.setBalance(account.getInitialDeposit());
         Account saved = accountRepo.save(account);
 
         Transaction txn = new Transaction();

@@ -26,11 +26,21 @@ export const depositApi = (data) =>
     body: JSON.stringify(data),
   });
 
+export const withdrawApi = (data) =>
+  fetch(`${BASE}/transactions/withdraw`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });
+
 export const getAccountsApi = () =>
   fetch(`${BASE}/accounts`, { headers: authHeaders() });
 
 export const getTransactionsApi = () =>
   fetch(`${BASE}/transactions`, { headers: authHeaders() });
+
+export const deleteTransactionApi = (id) =>
+  fetch(`${BASE}/transactions/${id}`, { method: 'DELETE', headers: authHeaders() });
 
 export const getAccountByNumberApi = (accNumber) =>
   fetch(`${BASE}/accounts/by-number/${accNumber}`, { headers: authHeaders() });
@@ -49,3 +59,10 @@ export const createLoanApi = (data) =>
 
 export const closeLoanApi = (id) =>
   fetch(`${BASE}/loans/${id}/close`, { method: 'PUT', headers: authHeaders() });
+
+export const transferApi = (data) =>
+  fetch(`${BASE}/transactions/transfer`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });

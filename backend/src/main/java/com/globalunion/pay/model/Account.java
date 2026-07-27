@@ -23,5 +23,6 @@ public class Account {
     private String occupation;
     private String accountType;
     private Double initialDeposit;
+    private Double balance;
     private String createdOn;
 }

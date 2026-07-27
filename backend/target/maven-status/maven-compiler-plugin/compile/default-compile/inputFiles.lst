@@ -1,9 +1,12 @@
+C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\controller\LoanController.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\security\JwtUtil.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\controller\AuthController.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\controller\AccountController.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\repository\EmployeeRepository.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\security\SecurityConfig.java
+C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\model\Loan.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\DataSeeder.java
+C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\repository\LoanRepository.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\controller\TransactionController.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\model\Employee.java
 C:\Users\mmrar\OneDrive\Attachments\Desktop\2PAYMENT APP\backend\src\main\java\com\globalunion\pay\model\Account.java

@@ -14,9 +14,10 @@ public class Loan {
     private String accountNumber;
     private String accountHolder;
     private String loanType;
+    private String purpose;
     private Double loanAmount;
     private Double interestRate;
     private Integer tenureMonths;
-    private String status; // ACTIVE, CLOSED
+    private String status;
     private String issuedOn;
 }

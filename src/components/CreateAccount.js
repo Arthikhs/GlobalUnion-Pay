@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createAccountApi, getAccountByNumberApi, updateAccountApi } from '../api';
+import { createAccountApi, getAccountByNumberApi, updateAccountApi, deleteAccountApi } from '../api';
 
 const emptyForm = {
   fullName: '', motherName: '', fatherName: '', dob: '', phone: '', email: '',
@@ -17,17 +17,27 @@ const fields = [
   { label: 'Occupation', name: 'occupation', type: '_select' },
 ];
 
+const backBtn = { background: 'none', border: 'none', color: '#1d4ed8', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', marginBottom: 20, padding: 0 };
+const labelStyle = { display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#374151', marginBottom: 6 };
+const inputStyle = { width: '100%', padding: '11px 14px', borderRadius: 10, border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#f9fafb', color: '#1e293b', boxSizing: 'border-box' };
+const primaryBtn = { background: '#1d4ed8', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 12, fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer' };
+const formCard = { background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', width: '100%' };
+const errorBox = { marginTop: 16, padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#dc2626', fontSize: '0.875rem' };
+const successCard = { background: 'white', borderRadius: 16, padding: 40, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', maxWidth: 500, textAlign: 'center' };
+const successTitle = { fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', marginBottom: 8 };
+const accBox = { background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '16px 24px', marginBottom: 24 };
+const miniLbl = { fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase', marginBottom: 4 };
+const miniVal = { fontSize: '0.95rem', color: '#1e293b', fontWeight: 600, margin: 0 };
+
 export default function CreateAccount() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState('create'); // 'create' | 'edit'
+  const [tab, setTab] = useState('create');
 
-  // ── Create state ──
   const [createForm, setCreateForm] = useState(emptyForm);
   const [createError, setCreateError] = useState('');
   const [createDone, setCreateDone] = useState(false);
   const [newAccNumber, setNewAccNumber] = useState('');
 
-  // ── Edit state ──
   const [searchAcc, setSearchAcc] = useState('');
   const [editForm, setEditForm] = useState(null);
   const [editId, setEditId] = useState(null);
@@ -35,7 +45,11 @@ export default function CreateAccount() {
   const [editDone, setEditDone] = useState(false);
   const [searchError, setSearchError] = useState('');
 
-  // ── Create handlers ──
+  const [deleteSearch, setDeleteSearch] = useState('');
+  const [deleteAccInfo, setDeleteAccInfo] = useState(null);
+  const [deleteSearchError, setDeleteSearchError] = useState('');
+  const [deleteVerifySent, setDeleteVerifySent] = useState(false);
+
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreateError('');
@@ -48,10 +62,8 @@ export default function CreateAccount() {
     } catch { setCreateError('Failed to connect to server.'); }
   };
 
-  // ── Edit handlers ──
   const handleSearch = async () => {
-    setSearchError('');
-    setEditForm(null);
+    setSearchError(''); setEditForm(null);
     if (!searchAcc.trim()) return;
     try {
       const res = await getAccountByNumberApi(searchAcc.trim());
@@ -75,6 +87,16 @@ export default function CreateAccount() {
       if (!res.ok) { setEditError(data.error || 'Failed to update account.'); return; }
       setEditDone(true);
     } catch { setEditError('Failed to connect to server.'); }
+  };
+
+  const handleDeleteSearch = async () => {
+    setDeleteSearchError(''); setDeleteAccInfo(null); setDeleteVerifySent(false);
+    if (!deleteSearch.trim()) return;
+    try {
+      const res = await getAccountByNumberApi(deleteSearch.trim());
+      if (!res.ok) { setDeleteSearchError('Account not found.'); return; }
+      setDeleteAccInfo(await res.json());
+    } catch { setDeleteSearchError('Failed to connect to server.'); }
   };
 
   const renderFields = (form, setForm, includeDeposit = false) => (
@@ -118,7 +140,6 @@ export default function CreateAccount() {
     </div>
   );
 
-  // ── Success screens ──
   if (createDone) return (
     <div>
       <button onClick={() => navigate('/dashboard')} style={backBtn}>← Back to Dashboard</button>
@@ -151,20 +172,18 @@ export default function CreateAccount() {
     <div>
       <button onClick={() => navigate('/dashboard')} style={backBtn}>← Back to Dashboard</button>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: 0, marginBottom: 28, borderBottom: '2px solid #e2e8f0', maxWidth: 400 }}>
-        {[{ key: 'create', label: '➕ Create New Account' }, { key: 'edit', label: '✏️ Edit Account' }].map(t => (
+      <div style={{ display: 'flex', gap: 0, marginBottom: 28, borderBottom: '2px solid #e2e8f0' }}>
+        {[{ key: 'create', label: '➕ Create' }, { key: 'edit', label: '✏️ Edit' }, { key: 'delete', label: '🗑️ Delete' }].map(t => (
           <button key={t.key} onClick={() => setTab(t.key)} style={{
             flex: 1, padding: '12px 0', border: 'none', background: 'none', cursor: 'pointer',
             fontWeight: 700, fontSize: '0.9rem',
-            color: tab === t.key ? '#1d4ed8' : '#64748b',
-            borderBottom: tab === t.key ? '2px solid #1d4ed8' : '2px solid transparent',
+            color: tab === t.key ? (t.key === 'delete' ? '#dc2626' : '#1d4ed8') : '#64748b',
+            borderBottom: tab === t.key ? `2px solid ${t.key === 'delete' ? '#dc2626' : '#1d4ed8'}` : '2px solid transparent',
             marginBottom: -2,
           }}>{t.label}</button>
         ))}
       </div>
 
-      {/* ── CREATE TAB ── */}
       {tab === 'create' && (
         <form onSubmit={handleCreate} style={formCard}>
           {renderFields(createForm, setCreateForm, true)}
@@ -173,11 +192,9 @@ export default function CreateAccount() {
         </form>
       )}
 
-      {/* ── EDIT TAB ── */}
       {tab === 'edit' && (
         <div>
-          {/* Search bar */}
-          <div style={{ display: 'flex', gap: 12, marginBottom: 24, maxWidth: 500 }}>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
             <input value={searchAcc} onChange={e => setSearchAcc(e.target.value)}
               placeholder="Enter Account Number (e.g. ACC1234567890)"
               style={{ ...inputStyle, flex: 1 }}
@@ -185,7 +202,6 @@ export default function CreateAccount() {
             <button onClick={handleSearch} style={{ ...primaryBtn, whiteSpace: 'nowrap' }}>Search</button>
           </div>
           {searchError && <div style={{ ...errorBox, marginBottom: 16 }}>⚠️ {searchError}</div>}
-
           {editForm && (
             <form onSubmit={handleUpdate} style={formCard}>
               {renderFields(editForm, setEditForm, false)}
@@ -195,16 +211,48 @@ export default function CreateAccount() {
           )}
         </div>
       )}
+
+      {tab === 'delete' && (
+        <div>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>Delete Account</h2>
+          <p style={{ color: '#64748b', marginBottom: 24, fontSize: '0.9rem' }}>Enter account number to delete.</p>
+          <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+            <input value={deleteSearch} onChange={e => setDeleteSearch(e.target.value)}
+              placeholder="Enter Account Number (e.g. ACC1234567890)"
+              style={{ ...inputStyle, flex: 1 }}
+              onKeyDown={e => e.key === 'Enter' && handleDeleteSearch()} />
+            <button onClick={handleDeleteSearch} style={{ ...primaryBtn, whiteSpace: 'nowrap' }}>Search</button>
+          </div>
+          {deleteSearchError && <div style={{ ...errorBox, marginBottom: 16 }}>⚠️ {deleteSearchError}</div>}
+
+          {deleteAccInfo && !deleteVerifySent && (
+            <div style={{ ...formCard }}>
+              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginBottom: 20 }}>
+                <div><p style={miniLbl}>Name</p><p style={miniVal}>{deleteAccInfo.fullName}</p></div>
+                <div><p style={miniLbl}>Account No</p><p style={{ ...miniVal, color: '#1d4ed8', fontFamily: 'monospace' }}>{deleteAccInfo.accountNumber}</p></div>
+                <div><p style={miniLbl}>Type</p><p style={miniVal}>{deleteAccInfo.accountType}</p></div>
+                <div><p style={miniLbl}>Phone</p><p style={miniVal}>{deleteAccInfo.phone}</p></div>
+                <div><p style={miniLbl}>Balance</p><p style={{ ...miniVal, color: '#059669' }}>₹{(deleteAccInfo.balance ?? deleteAccInfo.initialDeposit)?.toLocaleString('en-IN')}</p></div>
+              </div>
+              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: '0.85rem', color: '#dc2626' }}>
+                ⚠️ This will permanently delete the account and all its transactions.
+              </div>
+              <button onClick={() => setDeleteVerifySent(true)} style={{ ...primaryBtn, background: '#dc2626', width: '100%' }}>
+                Send Verification to {deleteAccInfo.phone}
+              </button>
+            </div>
+          )}
+
+          {deleteVerifySent && (
+            <div style={{ ...formCard, textAlign: 'center' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>📱</div>
+              <h3 style={{ fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Verification Sent!</h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>A verification message has been sent to <strong>{deleteAccInfo.phone}</strong>.</p>
+              <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 8 }}>Delete confirmation via OTP — coming soon.</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
-
-const backBtn = { background: 'none', border: 'none', color: '#1d4ed8', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', marginBottom: 20, padding: 0 };
-const labelStyle = { display: 'block', fontSize: '0.82rem', fontWeight: 600, color: '#374151', marginBottom: 6 };
-const inputStyle = { width: '100%', padding: '11px 14px', borderRadius: 10, border: '1.5px solid #d1d5db', fontSize: '0.9rem', outline: 'none', background: '#f9fafb', color: '#1e293b', boxSizing: 'border-box' };
-const primaryBtn = { background: '#1d4ed8', color: 'white', border: 'none', padding: '13px 28px', borderRadius: 12, fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer' };
-const formCard = { background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', width: '100%' };
-const errorBox = { marginTop: 16, padding: '12px 16px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#dc2626', fontSize: '0.875rem' };
-const successCard = { background: 'white', borderRadius: 16, padding: 40, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', maxWidth: 500, textAlign: 'center' };
-const successTitle = { fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', marginBottom: 8 };
-const accBox = { background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '16px 24px', marginBottom: 24 };

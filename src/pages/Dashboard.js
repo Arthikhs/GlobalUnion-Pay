@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useParams, Outlet } from 'react-router-dom';
-import BankDetails from '../components/BankDetails';
-import CreateAccount from '../components/CreateAccount';
-import Deposit from '../components/Deposit';
+import { useNavigate, Outlet } from 'react-router-dom';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -62,8 +59,12 @@ export default function Dashboard() {
 
   const cards = [
     { id: 'bank-details', icon: '🏦', title: 'Bank Details', desc: 'View account balance, IFSC, branch and account info.', color: '#1d4ed8', bg: '#eff6ff', border: '#bfdbfe' },
-    { id: 'deposit', icon: '💰', title: 'Deposit', desc: 'Deposit funds into any account quickly and securely.', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
-    { id: 'create-account', icon: '👤', title: 'Create New Account', desc: 'Register a new customer and open a savings or current account.', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' },
+    { id: 'deposit', icon: '💰', title: 'Deposit & Withdrawal', desc: 'Deposit or withdraw funds from any account quickly and securely.', color: '#d97706', bg: '#fffbeb', border: '#fde68a' },
+    { id: 'create-account', icon: '👤', title: 'Create & Edit Account', desc: 'Create a new customer account or edit an existing account.', color: '#059669', bg: '#ecfdf5', border: '#a7f3d0' },
+    { id: 'customer-details', icon: '🧑‍💼', title: 'Customer Details', desc: 'View and manage all registered customer accounts.', color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe' },
+    { id: 'loan-details', icon: '🏛️', title: 'Loan Details', desc: 'Issue and manage customer loans, track active and closed loans.', color: '#0891b2', bg: '#ecfeff', border: '#a5f3fc' },
+    { id: 'atm-card', icon: '💳', title: 'Generate ATM Card', desc: 'Generate and download ATM card PDF for any customer account.', color: '#be185d', bg: '#fdf2f8', border: '#fbcfe8' },
+    { id: 'fund-transfer', icon: '🔄', title: 'Fund Transfer', desc: 'Transfer funds instantly between any two customer accounts.', color: '#4F46E5', bg: '#eef2ff', border: '#c7d2fe' },
   ];
 
   return (
