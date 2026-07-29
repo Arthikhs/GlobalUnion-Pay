@@ -16,6 +16,7 @@ export default function CustomerDetails() {
   const [transactions, setTransactions] = useState([]);
   const [loans, setLoans] = useState([]);
   const [selectedAcc, setSelectedAcc] = useState(null);
+  const [selectedLoan, setSelectedLoan] = useState(null);
 
   const load = () => {
     getAccountsApi().then(r => r.json()).then(setAccounts).catch(() => {});
@@ -35,6 +36,57 @@ export default function CustomerDetails() {
   const accLoans = selectedAcc ? loans.filter(l => l.accountNumber === selectedAcc.accountNumber) : [];
   const totalCredit = accTxns.filter(t => t.type === 'credit').reduce((s, t) => s + (t.amount || 0), 0);
   const totalDebit = accTxns.filter(t => t.type === 'debit').reduce((s, t) => s + (t.amount || 0), 0);
+
+  if (selectedLoan) {
+    const r = selectedLoan.interestRate / 1200;
+    const n = selectedLoan.tenureMonths;
+    const emi = Math.round((selectedLoan.loanAmount * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1));
+    const total = emi * n;
+    const interest = total - selectedLoan.loanAmount;
+    return (
+      <div>
+        <button onClick={() => setSelectedLoan(null)} style={backBtn}>← Back to Customer Details</button>
+        <h2 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#1e293b', marginBottom: 24 }}>Loan Full Details</h2>
+        <div style={{ ...card, maxWidth: 600 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>{selectedLoan.loanType}</h3>
+            <span style={{ background: selectedLoan.status === 'ACTIVE' ? '#fef2f2' : '#f0fdf4', color: selectedLoan.status === 'ACTIVE' ? '#dc2626' : '#059669', fontSize: '0.78rem', fontWeight: 700, padding: '4px 14px', borderRadius: 20 }}>{selectedLoan.status}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            {[
+              { label: 'Account Holder', value: selectedLoan.accountHolder },
+              { label: 'Account Number', value: selectedLoan.accountNumber },
+              { label: 'Loan Type', value: selectedLoan.loanType },
+              { label: 'Loan Amount', value: `₹${selectedLoan.loanAmount?.toLocaleString('en-IN')}` },
+              { label: 'Interest Rate', value: `${selectedLoan.interestRate}% p.a.` },
+              { label: 'Tenure', value: `${selectedLoan.tenureMonths} months` },
+              { label: 'Issued On', value: selectedLoan.issuedOn },
+              { label: 'Status', value: selectedLoan.status },
+              { label: 'Purpose', value: selectedLoan.purpose || '—', fullWidth: true },
+            ].map(item => (
+              <div key={item.label} style={{ background: '#f8fafc', borderRadius: 10, padding: '12px 14px', border: '1px solid #e2e8f0', ...(item.fullWidth ? { gridColumn: '1 / -1' } : {}) }}>
+                <p style={lbl}>{item.label}</p>
+                <p style={val}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: '16px 18px', marginTop: 20 }}>
+            <p style={{ fontWeight: 700, color: '#1d4ed8', marginBottom: 12, fontSize: '0.9rem' }}>📊 EMI Breakdown</p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              {[{ label: 'Monthly EMI', value: `₹${emi.toLocaleString('en-IN')}`, color: '#1d4ed8' },
+                { label: 'Total Interest', value: `₹${interest.toLocaleString('en-IN')}`, color: '#dc2626' },
+                { label: 'Total Payable', value: `₹${total.toLocaleString('en-IN')}`, color: '#059669' }].map(e => (
+                <div key={e.label} style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600, marginBottom: 4 }}>{e.label}</p>
+                  <p style={{ fontSize: '1rem', fontWeight: 800, color: e.color }}>{e.value}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (selectedAcc) return (
     <div>
@@ -97,18 +149,14 @@ export default function CustomerDetails() {
           <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e293b', marginBottom: 16 }}>🏦 Loan Details ({accLoans.length})</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {accLoans.map(loan => (
-              <div key={loan.id} style={{ background: '#f8fafc', borderRadius: 10, padding: '12px 16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                  <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem' }}>{loan.loanType}</span>
+              <div key={loan.id} style={{ background: '#f8fafc', borderRadius: 10, padding: '12px 16px', border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 14, fontSize: '0.85rem', color: '#64748b', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 700, color: '#1e293b' }}>{loan.loanType}</span>
                   <span style={{ background: loan.status === 'ACTIVE' ? '#fef2f2' : '#f0fdf4', color: loan.status === 'ACTIVE' ? '#dc2626' : '#059669', fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>{loan.status}</span>
-                </div>
-                <div style={{ display: 'flex', gap: 16, fontSize: '0.82rem', color: '#64748b', flexWrap: 'wrap' }}>
                   <span>💰 ₹{loan.loanAmount?.toLocaleString('en-IN')}</span>
-                  <span>📈 {loan.interestRate}% p.a.</span>
-                  <span>⏳ {loan.tenureMonths} months</span>
                   <span>📅 {loan.issuedOn}</span>
-                  {loan.purpose && <span>📝 {loan.purpose}</span>}
                 </div>
+                <button onClick={() => setSelectedLoan(loan)} style={{ ...detailsBtn, whiteSpace: 'nowrap', marginLeft: 12 }}>View Loan Details</button>
               </div>
             ))}
           </div>

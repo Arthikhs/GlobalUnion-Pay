@@ -79,6 +79,39 @@ export default function BankDetails() {
         ))}
       </div>
 
+      {/* Active Loans */}
+      <SectionTitle>🏦 Active Loans</SectionTitle>
+      <div style={{ marginBottom: 28 }}>
+        {loans.filter(l => l.status === 'ACTIVE').length === 0 ? (
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>No active loans.</p>
+        ) : (
+          <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+              <thead>
+                <tr style={{ background: '#f8fafc' }}>
+                  {['Account Holder', 'Account No', 'Loan Type', 'Amount', 'Interest', 'Tenure', 'Issued On'].map(h => (
+                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#64748b', fontWeight: 600, fontSize: '0.78rem', textTransform: 'uppercase', borderBottom: '1px solid #e2e8f0' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {loans.filter(l => l.status === 'ACTIVE').map((loan, i) => (
+                  <tr key={loan.id} style={{ background: i % 2 === 0 ? 'white' : '#f8fafc' }}>
+                    <td style={td}><span style={{ fontWeight: 700, color: '#1e293b' }}>{loan.accountHolder}</span></td>
+                    <td style={td}><span style={{ fontFamily: 'monospace', color: '#1d4ed8', fontWeight: 600 }}>{loan.accountNumber}</span></td>
+                    <td style={td}>{loan.loanType}</td>
+                    <td style={td}><span style={{ color: '#dc2626', fontWeight: 700 }}>₹{loan.loanAmount?.toLocaleString('en-IN')}</span></td>
+                    <td style={td}>{loan.interestRate}% p.a.</td>
+                    <td style={td}>{loan.tenureMonths} months</td>
+                    <td style={td}>{loan.issuedOn}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* Revenue & Transactions */}
       <SectionTitle>📊 Revenue & Transactions</SectionTitle>
       <div style={{ marginBottom: 28 }}>
