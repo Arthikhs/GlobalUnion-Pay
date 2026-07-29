@@ -49,6 +49,10 @@ export default function CreateAccount() {
   const [deleteAccInfo, setDeleteAccInfo] = useState(null);
   const [deleteSearchError, setDeleteSearchError] = useState('');
   const [deleteVerifySent, setDeleteVerifySent] = useState(false);
+  const [deleteOtp, setDeleteOtp] = useState('');
+  const [generatedOtp, setGeneratedOtp] = useState('');
+  const [otpError, setOtpError] = useState('');
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -91,6 +95,7 @@ export default function CreateAccount() {
 
   const handleDeleteSearch = async () => {
     setDeleteSearchError(''); setDeleteAccInfo(null); setDeleteVerifySent(false);
+    setDeleteOtp(''); setGeneratedOtp(''); setOtpError(''); setDeleteSuccess(false);
     if (!deleteSearch.trim()) return;
     try {
       const res = await getAccountByNumberApi(deleteSearch.trim());
@@ -237,18 +242,66 @@ export default function CreateAccount() {
               <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: '0.85rem', color: '#dc2626' }}>
                 ⚠️ This will permanently delete the account and all its transactions.
               </div>
-              <button onClick={() => setDeleteVerifySent(true)} style={{ ...primaryBtn, background: '#dc2626', width: '100%' }}>
+              <button onClick={() => {
+                const otp = String(Math.floor(100000 + Math.random() * 900000));
+                setGeneratedOtp(otp);
+                setDeleteVerifySent(true);
+                setOtpError('');
+                setDeleteOtp('');
+              }} style={{ ...primaryBtn, background: '#dc2626', width: '100%' }}>
                 Send Verification to {deleteAccInfo.phone}
               </button>
             </div>
           )}
 
-          {deleteVerifySent && (
+          {deleteVerifySent && !deleteSuccess && (
             <div style={{ ...formCard, textAlign: 'center' }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>📱</div>
-              <h3 style={{ fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Verification Sent!</h3>
-              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>A verification message has been sent to <strong>{deleteAccInfo.phone}</strong>.</p>
-              <p style={{ color: '#94a3b8', fontSize: '0.8rem', marginTop: 8 }}>Delete confirmation via OTP — coming soon.</p>
+              <h3 style={{ fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>OTP Sent!</h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 4 }}>
+                Verification code sent to <strong>{deleteAccInfo.phone}</strong>
+              </p>
+              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: '10px 16px', marginBottom: 20, display: 'inline-block' }}>
+                <span style={{ fontSize: '0.78rem', color: '#92400e', fontWeight: 600 }}>Your OTP: </span>
+                <span style={{ fontSize: '1.3rem', fontWeight: 800, color: '#b45309', fontFamily: 'monospace', letterSpacing: 4 }}>{generatedOtp}</span>
+              </div>
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 12 }}>
+                <input
+                  value={deleteOtp}
+                  onChange={e => { setDeleteOtp(e.target.value); setOtpError(''); }}
+                  placeholder="Enter 6-digit OTP"
+                  maxLength={6}
+                  style={{ ...inputStyle, width: 180, textAlign: 'center', fontSize: '1.1rem', letterSpacing: 4, fontFamily: 'monospace' }}
+                  onKeyDown={e => e.key === 'Enter' && document.getElementById('confirmDeleteBtn').click()}
+                />
+                <button
+                  id="confirmDeleteBtn"
+                  onClick={async () => {
+                    if (deleteOtp !== generatedOtp) { setOtpError('Invalid OTP. Please try again.'); return; }
+                    try {
+                      const res = await deleteAccountApi(deleteAccInfo.id);
+                      if (!res.ok) { setOtpError('Failed to delete account.'); return; }
+                      setDeleteSuccess(true);
+                    } catch { setOtpError('Failed to connect to server.'); }
+                  }}
+                  style={{ ...primaryBtn, background: '#dc2626' }}
+                >Confirm Delete</button>
+              </div>
+              {otpError && <div style={{ color: '#dc2626', fontSize: '0.85rem', fontWeight: 600 }}>⚠️ {otpError}</div>}
+            </div>
+          )}
+
+          {deleteSuccess && (
+            <div style={{ ...formCard, textAlign: 'center' }}>
+              <div style={{ fontSize: 56, marginBottom: 12 }}>✅</div>
+              <h3 style={{ fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Account Deleted!</h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: 20 }}>
+                Account <strong style={{ fontFamily: 'monospace', color: '#dc2626' }}>{deleteAccInfo.accountNumber}</strong> has been permanently deleted.
+              </p>
+              <button onClick={() => {
+                setDeleteSearch(''); setDeleteAccInfo(null); setDeleteVerifySent(false);
+                setDeleteOtp(''); setGeneratedOtp(''); setOtpError(''); setDeleteSuccess(false);
+              }} style={primaryBtn}>Delete Another Account</button>
             </div>
           )}
         </div>
