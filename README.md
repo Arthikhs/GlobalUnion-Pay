@@ -4,8 +4,10 @@ A complete enterprise-grade banking ecosystem built by **Arthikhs**, containing 
 
 | Project | Description |
 |---|---|
-| 🏦 **Bank & ATM System** | Employee banking portal + ATM simulation (React + Spring Boot) |
+| 🏦 **SecureBank — Bank & ATM System** | Employee banking portal + ATM simulation (React + Spring Boot) |
 | 💸 **GlobalUnionPay UPI Platform** | Production-grade UPI payment platform with 10 microservices (Java 21 + React + TypeScript) |
+
+> 🔗 GitHub: [https://github.com/Arthikhs/GlobalUnion-Pay](https://github.com/Arthikhs/GlobalUnion-Pay)
 
 ---
 
@@ -13,33 +15,35 @@ A complete enterprise-grade banking ecosystem built by **Arthikhs**, containing 
 
 ```
 GlobalUnion-Pay/
-├── src/                        # 🏦 Bank Project — React Frontend
-├── ATM-Project/                # 🏧 ATM Simulation — React Frontend
-├── backend/                    # ☕ Bank Project — Spring Boot Backend
-├── public/
-├── package.json
-│
-└── GlobalUnionPay-UPI/         # 💸 UPI Platform (Microservices)
-    ├── backend/
-    │   ├── api-gateway/        # Port 8080
-    │   ├── auth-service/       # Port 8081
-    │   ├── user-service/       # Port 8082
-    │   ├── upi-service/        # Port 8083
-    │   ├── payment-service/    # Port 8084
-    │   ├── wallet-service/     # Port 8085
-    │   ├── transaction-service/# Port 8086
-    │   ├── notification-service/# Port 8087
-    │   ├── fraud-service/      # Port 8088
-    │   └── analytics-service/  # Port 8089
-    ├── frontend/               # React 18 + TypeScript
-    └── docker-compose.yml
+├── 1arthikupi/                         # 🏦 SecureBank + 💸 GlobalUnionPay UPI
+│   ├── src/                            # Bank Project — React Frontend
+│   ├── ATM-Project/                    # ATM Simulation — React Frontend
+│   ├── backend/                        # Bank Project — Spring Boot Backend (Port 8090)
+│   ├── public/
+│   ├── package.json
+│   └── GlobalUnionPay-UPI/             # UPI Platform (Microservices)
+│       ├── backend/
+│       │   ├── api-gateway/            # Port 8080
+│       │   ├── auth-service/           # Port 8081
+│       │   ├── user-service/           # Port 8082
+│       │   ├── upi-service/            # Port 8083
+│       │   ├── payment-service/        # Port 8084
+│       │   ├── wallet-service/         # Port 8085
+│       │   ├── transaction-service/    # Port 8086
+│       │   ├── notification-service/   # Port 8087
+│       │   ├── fraud-service/          # Port 8088
+│       │   ├── analytics-service/      # Port 8089
+│       │   └── merchant-service/       # Port 8090
+│       ├── frontend/                   # React 18 + TypeScript (Port 4000)
+│       └── docker-compose.yml
+└── 2PAYMENT APP/                       # Standalone Bank & ATM (duplicate/backup)
 ```
 
 ---
 
-# 🏦 Project 1 — Bank & ATM Management System
+# 🏦 Project 1 — SecureBank: Bank & ATM Management System
 
-A modern **Employee Banking Portal & ATM Simulation** built with React.js and Spring Boot for internal bank employee use.
+A modern **Employee Banking Portal & ATM Simulation** built with React.js and Spring Boot for internal bank employee use. Runs on **port 8090** to integrate with GlobalUnionPay UPI.
 
 ## Tech Stack
 
@@ -63,12 +67,13 @@ A modern **Employee Banking Portal & ATM Simulation** built with React.js and Sp
 ### 🏦 Bank Portal
 - 🔐 Secure Employee Login — JWT authentication with split-screen UI
 - 🏦 Bank Details — Account balance, IFSC, branch, revenue & transaction overview
-- 👤 Create & Edit Account — Open savings/current accounts, edit or delete
+- 👤 Create & Edit Account — Open savings/current accounts with `+91` phone validation
 - 💰 Deposit & Withdrawal — Real-time balance validation
 - 🔄 Fund Transfer — 3-step confirmation flow
 - 🧑‍💼 Customer Details — Full profile & per-account transaction history
 - 🏛️ Loan Management — Education, Business, Vehicle, Agriculture, Property loans with EMI calculator
 - 💳 ATM Card Generator — Generate and download ATM card PDF
+- 🔗 UPI Integration — Phone number linked to GlobalUnionPay UPI platform
 
 ### 🏧 ATM Simulation
 - 💳 Realistic card insert flow
@@ -85,18 +90,19 @@ A modern **Employee Banking Portal & ATM Simulation** built with React.js and Sp
 - Maven
 
 ```bash
-# 1. Start Backend
-cd backend
+# 1. Start Backend (port 8090)
+cd 1arthikupi/backend
 mvn spring-boot:run
-# Runs at http://localhost:8080
+# Runs at http://localhost:8090
 
 # 2. Start Bank Frontend (new terminal)
+cd 1arthikupi
 npm install
 npm start
 # Runs at http://localhost:3000
 
 # 3. Start ATM Project (new terminal)
-cd ATM-Project
+cd 1arthikupi/ATM-Project
 npm install
 set PORT=3001 && npm start
 # Runs at http://localhost:3001
@@ -118,6 +124,7 @@ set PORT=3001 && npm start
 | POST | `/api/accounts` | Create account |
 | PUT | `/api/accounts/{id}` | Update account |
 | DELETE | `/api/accounts/{id}` | Delete account |
+| GET | `/api/accounts/check-phone?phone=` | Check phone linked to account |
 | POST | `/api/transactions/deposit` | Deposit funds |
 | POST | `/api/transactions/withdraw` | Withdraw funds |
 | POST | `/api/transactions/transfer` | Fund transfer |
@@ -129,7 +136,7 @@ set PORT=3001 && npm start
 
 # 💸 Project 2 — GlobalUnionPay UPI Platform
 
-A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Razorpay — built with Java 21 Spring Boot Microservices and React 18 + TypeScript.
+A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Razorpay — built with Java 21 Spring Boot Microservices and React 18 + TypeScript. Fully Dockerized and integrated with SecureBank.
 
 ## Tech Stack
 
@@ -175,7 +182,7 @@ A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Raz
 ## Microservices Architecture
 
 ```
-API Gateway (8080)
+API Gateway        (8080)
 ├── Auth Service        (8081) – JWT, OTP, Spring Security
 ├── User Service        (8082) – Profile, KYC, Referral
 ├── UPI Service         (8083) – UPI IDs, VPA, QR, Payments
@@ -185,27 +192,34 @@ API Gateway (8080)
 ├── Notification Service(8087) – WebSocket, Kafka Consumer
 ├── Fraud Service       (8088) – Risk scoring, AOP, Pattern detection
 ├── Analytics Service   (8089) – Dashboard stats, Kafka consumer
-└── Merchant Service    (8088) – Merchant portal, Settlements
+└── Merchant Service          – Merchant portal, Settlements
 ```
 
 ## Key Features
 
-- PhonePe-style payment flow — Enter phone/UPI → Validate → Amount → PIN → Success
-- Real-time notifications via Spring WebSocket + Kafka
-- Fraud detection with Spring AOP + Redis pattern analysis
-- Spring Batch for bulk transaction settlement
-- Redis caching for user profiles, balances, UPI validation
-- JWT + Spring Security with role-based access control
-- Flyway database migrations
-- Resilience4j circuit breaker on payment calls
-- GitHub Actions CI/CD pipeline with Docker build + AWS deploy
+- ✅ Bank account verification on login — phone must be linked to SecureBank
+- ✅ PhonePe-style payment flow — Enter phone/UPI → Validate → Amount → PIN → Success
+- ✅ Dashboard shows real bank customer name fetched from SecureBank
+- ✅ My Account → Profile shows full bank account details (name, balance, account number, etc.)
+- ✅ Real-time notifications via Spring WebSocket + Kafka
+- ✅ Fraud detection with Spring AOP + Redis pattern analysis
+- ✅ Spring Batch for bulk transaction settlement
+- ✅ Redis caching for user profiles, balances, UPI validation
+- ✅ JWT + Spring Security with role-based access control
+- ✅ Flyway database migrations
+- ✅ Resilience4j circuit breaker on payment calls
+- ✅ GitHub Actions CI/CD pipeline with Docker build + AWS deploy
 
 ## Run — UPI Platform
+
+### Prerequisites
+- Docker Desktop running
+- SecureBank backend running on port 8090
 
 ### Option 1: Docker Compose (Recommended)
 
 ```bash
-cd GlobalUnionPay-UPI
+cd 1arthikupi/GlobalUnionPay-UPI
 docker-compose up -d
 ```
 
