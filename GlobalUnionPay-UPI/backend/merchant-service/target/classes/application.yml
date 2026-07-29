@@ -1,0 +1,27 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: merchant-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/globalunionpay_merchants?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: merchant-service-group
+      auto-offset-reset: earliest
+
+jwt:
+  secret: globalunionpay-merchant-secret-key-2024-very-long-secret
