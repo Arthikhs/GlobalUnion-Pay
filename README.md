@@ -16,6 +16,8 @@
 <br/>
 
 > Built by **[Arthikhs](https://github.com/Arthikhs)** — Full Stack Java Developer
+>
+> 🔗 **[GlobalUnion-Pay Repository](https://github.com/Arthikhs/GlobalUnion-Pay)**
 
 </div>
 
@@ -384,7 +386,7 @@ This project is built for **educational and portfolio purposes**.
 
 <div align="center">
 
-Built with ❤️ by **[Arthikhs](https://github.com/Arthikhs)**
+Built with ❤️ by **[Arthikhs](https://github.com/Arthikhs)** | 🔗 **[GlobalUnion-Pay](https://github.com/Arthikhs/GlobalUnion-Pay)**
 
 ⭐ Star this repo if you found it useful!
 
