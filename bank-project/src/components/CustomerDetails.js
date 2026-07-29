@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAccountsApi, deleteAccountApi, getTransactionsApi } from '../api';
+import { getAccountsApi, deleteAccountApi, getTransactionsApi, getLoansApi } from '../api';
 
 const backBtn = { background: 'none', border: 'none', color: '#1d4ed8', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', marginBottom: 20, padding: 0 };
 const card = { background: 'white', borderRadius: 14, padding: '16px 20px', boxShadow: '0 2px 10px rgba(0,0,0,0.06)', border: '1px solid #e2e8f0' };
@@ -14,11 +14,13 @@ export default function CustomerDetails() {
   const navigate = useNavigate();
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
+  const [loans, setLoans] = useState([]);
   const [selectedAcc, setSelectedAcc] = useState(null);
 
   const load = () => {
     getAccountsApi().then(r => r.json()).then(setAccounts).catch(() => {});
     getTransactionsApi().then(r => r.json()).then(setTransactions).catch(() => {});
+    getLoansApi().then(r => r.json()).then(setLoans).catch(() => {});
   };
   useEffect(() => { load(); }, []);
 
@@ -30,6 +32,7 @@ export default function CustomerDetails() {
   };
 
   const accTxns = selectedAcc ? transactions.filter(t => t.accountNumber === selectedAcc.accountNumber) : [];
+  const accLoans = selectedAcc ? loans.filter(l => l.accountNumber === selectedAcc.accountNumber) : [];
   const totalCredit = accTxns.filter(t => t.type === 'credit').reduce((s, t) => s + (t.amount || 0), 0);
   const totalDebit = accTxns.filter(t => t.type === 'debit').reduce((s, t) => s + (t.amount || 0), 0);
 
@@ -87,6 +90,30 @@ export default function CustomerDetails() {
           ))}
         </div>
       </div>
+
+      {/* Loans Section */}
+      {accLoans.length > 0 && (
+        <div style={{ ...card, marginBottom: 24 }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e293b', marginBottom: 16 }}>🏦 Loan Details ({accLoans.length})</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {accLoans.map(loan => (
+              <div key={loan.id} style={{ background: '#f8fafc', borderRadius: 10, padding: '12px 16px', border: '1px solid #e2e8f0' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                  <span style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.9rem' }}>{loan.loanType}</span>
+                  <span style={{ background: loan.status === 'ACTIVE' ? '#fef2f2' : '#f0fdf4', color: loan.status === 'ACTIVE' ? '#dc2626' : '#059669', fontSize: '0.72rem', fontWeight: 700, padding: '2px 10px', borderRadius: 20 }}>{loan.status}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 16, fontSize: '0.82rem', color: '#64748b', flexWrap: 'wrap' }}>
+                  <span>💰 ₹{loan.loanAmount?.toLocaleString('en-IN')}</span>
+                  <span>📈 {loan.interestRate}% p.a.</span>
+                  <span>⏳ {loan.tenureMonths} months</span>
+                  <span>📅 {loan.issuedOn}</span>
+                  {loan.purpose && <span>📝 {loan.purpose}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Transaction History */}
       <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1e293b', marginBottom: 14 }}>📊 Transaction History ({accTxns.length})</h3>
