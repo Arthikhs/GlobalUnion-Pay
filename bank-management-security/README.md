@@ -1,13 +1,33 @@
+<div align="center">
+
 # 🏦 Bank Management & Security
 
-> A complete Full Stack Banking Ecosystem built by **Arthikhs** — three production-ready projects in one repository.
+### A complete Full Stack Banking Ecosystem — 3 production-ready projects in one repository
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=java)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-brightgreen?style=flat-square&logo=springboot)
-![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Docker](https://img.shields.io/badge/Docker-ready-blue?style=flat-square&logo=docker)
-![License](https://img.shields.io/badge/License-Educational-lightgrey?style=flat-square)
+[![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.java.com)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.2-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com)
+[![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white)](https://kafka.apache.org)
+[![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
+[![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com)
+
+<br/>
+
+> Built by **[Arthikhs](https://github.com/Arthikhs)** — Full Stack Java Developer
+
+</div>
+
+---
+
+## 📌 What's Inside
+
+| # | Project | Stack | Description |
+|---|---------|-------|-------------|
+| 1 | 🏧 **ATM Simulation** | React.js | Realistic ATM machine with PIN auth, withdrawal, balance check |
+| 2 | 🏦 **Bank Portal** | React + Spring Boot + JWT | Full employee banking portal with loan & account management |
+| 3 | 💸 **GlobalUnionPay UPI** | 10 Microservices + React TS | Production-grade UPI payment platform like PhonePe / GPay |
 
 ---
 
@@ -16,93 +36,111 @@
 ```
 bank-management-security/
 │
-├── 🏧 atm-project/              ATM Simulation — React Frontend
+├── 🏧 atm-project/                   ATM Simulation — React Frontend
 │   ├── src/
-│   │   ├── components/ATMMachine.js
+│   │   ├── components/
+│   │   │   └── ATMMachine.js
 │   │   ├── App.js
-│   │   └── index.js
+│   │   ├── index.js
+│   │   └── index.css
 │   └── package.json
 │
-├── 🏦 bank-project/             Bank Portal — React + Spring Boot
-│   ├── src/                     React Frontend
-│   │   ├── components/          BankDetails, CreateAccount, Deposit...
-│   │   ├── pages/               Dashboard, LoginPage
+├── 🏦 bank-project/                  Bank Portal — React + Spring Boot
+│   ├── src/                          React Frontend (Port 3000)
+│   │   ├── components/
+│   │   │   ├── BankDetails.js
+│   │   │   ├── CreateAccount.js
+│   │   │   ├── Deposit.js
+│   │   │   ├── FundTransfer.js
+│   │   │   ├── LoanDetails.js
+│   │   │   ├── CustomerDetails.js
+│   │   │   ├── ATMCard.js
+│   │   │   └── ATMMachine.js
+│   │   ├── pages/
+│   │   │   ├── Dashboard.js
+│   │   │   └── LoginPage.js
 │   │   ├── AccountContext.js
-│   │   └── TransactionContext.js
-│   ├── backend/                 Spring Boot Backend
+│   │   ├── TransactionContext.js
+│   │   └── api.js
+│   ├── backend/                      Spring Boot Backend (Port 8080)
 │   │   └── src/main/java/com/globalunion/pay/
 │   │       ├── controller/
 │   │       ├── model/
 │   │       ├── repository/
-│   │       ├── security/        JWT + Spring Security
+│   │       ├── security/             JWT + Spring Security
+│   │       ├── DataSeeder.java
 │   │       └── PayApplication.java
 │   └── package.json
 │
-└── 💸 globalunionpay-upi/       UPI Platform — 10 Microservices + React TS
+└── 💸 globalunionpay-upi/            UPI Platform — Microservices + React TS
     ├── backend/
-    │   ├── api-gateway/         Port 8080
-    │   ├── auth-service/        Port 8081
-    │   ├── user-service/        Port 8082
-    │   ├── upi-service/         Port 8083
-    │   ├── payment-service/     Port 8084
-    │   ├── wallet-service/      Port 8085
-    │   ├── transaction-service/ Port 8086
-    │   ├── notification-service/Port 8087
-    │   ├── fraud-service/       Port 8088
-    │   ├── analytics-service/   Port 8089
+    │   ├── api-gateway/              Port 8080
+    │   ├── auth-service/             Port 8081
+    │   ├── user-service/             Port 8082
+    │   ├── upi-service/              Port 8083
+    │   ├── payment-service/          Port 8084
+    │   ├── wallet-service/           Port 8085
+    │   ├── transaction-service/      Port 8086
+    │   ├── notification-service/     Port 8087
+    │   ├── fraud-service/            Port 8088
+    │   ├── analytics-service/        Port 8089
     │   └── merchant-service/
-    ├── frontend/                React 18 + TypeScript + Tailwind
+    ├── frontend/                     React 18 + TypeScript + Tailwind (Port 5173)
     ├── docker-compose.yml
-    └── pom.xml
+    └── pom.xml                       Parent Maven POM
 ```
 
 ---
 
 ## 🏧 Project 1 — ATM Simulation
 
-A realistic ATM machine simulation built with React.js.
+A realistic ATM machine simulation built with React.js that mimics real ATM behavior.
 
-### Features
-- 💳 Card insert & eject flow
-- 🔢 Secure PIN authentication
-- 💰 Cash withdrawal with custom amount
-- 🏦 Balance enquiry
-- 📋 Mini statement
-- 📌 PIN change
+### ✨ Features
 
-### Run
+- 💳 Card insert & eject animation flow
+- 🔢 Secure PIN authentication with masked input
+- 💰 Cash withdrawal with denomination selection
+- 🏦 Balance enquiry with account summary
+- 📋 Mini statement — last 5 transactions
+- 📌 PIN change with confirmation
+
+### ▶️ Run
 
 ```bash
 cd atm-project
 npm install
 set PORT=3001 && npm start
-# → http://localhost:3001
 ```
+
+🌐 Open → `http://localhost:3001`
 
 ---
 
 ## 🏦 Project 2 — Bank Portal
 
-A full-stack employee banking portal with React.js frontend and Spring Boot backend.
+A full-stack employee banking portal with React.js frontend and Spring Boot REST API backend, secured with JWT authentication.
 
-### Features
+### ✨ Features
+
 - 🔐 JWT-based employee login with split-screen UI
-- 🏦 Bank details — balance, IFSC, branch, revenue overview
+- 🏦 Bank overview — balance, IFSC, branch, revenue dashboard
 - 👤 Create, edit & delete customer accounts
 - 💰 Deposit & withdrawal with real-time balance validation
 - 🔄 Fund transfer with 3-step confirmation flow
-- 🧑‍💼 Customer details & per-account transaction history
-- 🏛️ Loan management — Education, Business, Vehicle, Agriculture, Property + EMI calculator
+- 🧑‍💼 Customer details with per-account transaction history
+- 🏛️ Loan management — Education, Business, Vehicle, Agriculture, Property
+- 📊 EMI calculator with amortization schedule
 - 💳 ATM card generator — generate & download as PDF
 
-### Demo Credentials
+### 🔑 Demo Credentials
 
 | Field | Value |
-|---|---|
+|-------|-------|
 | Employee ID | `EMP001` |
 | Password | `bank@1234` |
 
-### Run
+### ▶️ Run
 
 ```bash
 # 1. Start Backend
@@ -117,185 +155,237 @@ npm start
 # → http://localhost:3000
 ```
 
-### API Endpoints
+### 📡 API Endpoints
 
 | Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/auth/login` | Employee login |
-| GET | `/api/accounts` | Get all accounts |
-| POST | `/api/accounts` | Create account |
-| PUT | `/api/accounts/{id}` | Update account |
-| DELETE | `/api/accounts/{id}` | Delete account |
-| POST | `/api/transactions/deposit` | Deposit funds |
-| POST | `/api/transactions/withdraw` | Withdraw funds |
-| POST | `/api/transactions/transfer` | Fund transfer |
-| GET | `/api/loans` | Get all loans |
-| POST | `/api/loans` | Issue loan |
-| PUT | `/api/loans/{id}/close` | Close loan |
+|--------|----------|-------------|
+| `POST` | `/api/auth/login` | Employee login → returns JWT |
+| `GET` | `/api/accounts` | Get all customer accounts |
+| `POST` | `/api/accounts` | Create new account |
+| `PUT` | `/api/accounts/{id}` | Update account details |
+| `DELETE` | `/api/accounts/{id}` | Delete account |
+| `POST` | `/api/transactions/deposit` | Deposit funds |
+| `POST` | `/api/transactions/withdraw` | Withdraw funds |
+| `POST` | `/api/transactions/transfer` | Fund transfer between accounts |
+| `GET` | `/api/transactions/{accountId}` | Get transaction history |
+| `GET` | `/api/loans` | Get all loans |
+| `POST` | `/api/loans` | Issue new loan |
+| `PUT` | `/api/loans/{id}/close` | Close / foreclose loan |
 
 ---
 
 ## 💸 Project 3 — GlobalUnionPay UPI Platform
 
-A production-grade UPI payment platform inspired by PhonePe, Google Pay and Razorpay — built with Java 21 Spring Boot Microservices and React 18 + TypeScript.
+A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Razorpay — built with **Java 21 Spring Boot Microservices** and **React 18 TypeScript**.
 
-### Features
-- 📱 PhonePe-style payment flow — Enter phone/UPI → Validate → Amount → PIN → Success
-- 🔔 Real-time notifications via Spring WebSocket + Kafka
+### ✨ Features
+
+- 📱 PhonePe-style payment flow — Phone/UPI → Validate → Amount → PIN → Success
+- 🔔 Real-time notifications via Spring WebSocket + Apache Kafka
 - 🛡️ Fraud detection with Spring AOP + Redis pattern analysis
 - 📦 Spring Batch for bulk transaction settlement
 - ⚡ Redis caching for user profiles, balances, UPI validation
-- 🔐 JWT + Spring Security with role-based access control
-- 🗄️ Flyway database migrations
-- 🔄 Resilience4j circuit breaker on payment calls
-- 🚀 GitHub Actions CI/CD pipeline with Docker + AWS deploy
-- 🏪 Merchant portal with settlement management
-- 📊 Analytics dashboard with Kafka consumer
+- 🔐 JWT + Spring Security with role-based access control (USER / MERCHANT / ADMIN)
+- 🗄️ Flyway database migrations for zero-downtime schema changes
+- 🔄 Resilience4j circuit breaker on all inter-service payment calls
+- 🚀 GitHub Actions CI/CD pipeline with Docker + AWS EC2 deploy
+- 🏪 Merchant portal with QR code generation & settlement management
+- 📊 Analytics dashboard with Kafka consumer & Recharts visualization
 
-### Microservices
+### 🧩 Microservices Architecture
 
 | Service | Port | Responsibility |
-|---|---|---|
-| API Gateway | 8080 | Routing, auth filter |
-| Auth Service | 8081 | JWT, OTP, registration |
-| User Service | 8082 | Profile, KYC, referral |
-| UPI Service | 8083 | UPI IDs, VPA, QR codes |
-| Payment Service | 8084 | Payment flow, Razorpay, scheduled |
-| Wallet Service | 8085 | Balance, add money, deduct |
-| Transaction Service | 8086 | History, Spring Batch, PostgreSQL |
-| Notification Service | 8087 | WebSocket, Kafka consumer |
-| Fraud Service | 8088 | Risk scoring, AOP, pattern detection |
-| Analytics Service | 8089 | Dashboard stats, Kafka consumer |
-| Merchant Service | — | Merchant portal, settlements |
+|---------|------|----------------|
+| **API Gateway** | 8080 | Routing, JWT auth filter, rate limiting |
+| **Auth Service** | 8081 | JWT tokens, OTP verification, registration |
+| **User Service** | 8082 | User profile, KYC, referral system |
+| **UPI Service** | 8083 | UPI IDs, VPA management, QR codes |
+| **Payment Service** | 8084 | Payment flow, Razorpay integration, scheduled jobs |
+| **Wallet Service** | 8085 | Balance management, add money, deductions |
+| **Transaction Service** | 8086 | Transaction history, Spring Batch, PostgreSQL |
+| **Notification Service** | 8087 | WebSocket push, Kafka consumer, email/SMS |
+| **Fraud Service** | 8088 | Risk scoring, AOP interceptors, pattern detection |
+| **Analytics Service** | 8089 | Dashboard stats, Kafka consumer, reporting |
+| **Merchant Service** | — | Merchant portal, QR generation, settlements |
 
-### Run — Docker (Recommended)
+### ▶️ Run — Docker (Recommended)
 
 ```bash
 cd globalunionpay-upi
 docker-compose up -d
-# Frontend  → http://localhost:4000
-# API Gateway → http://localhost:8080
 ```
 
-### Run — Manual
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| API Gateway | http://localhost:8080 |
+| Kafka UI | http://localhost:9000 |
+
+### ▶️ Run — Manual
 
 ```bash
-# Start infrastructure
+# Step 1: Start infrastructure
 docker-compose up -d mysql postgres redis zookeeper kafka
 
-# Start each backend service
-cd globalunionpay-upi/backend/auth-service        && mvn spring-boot:run
-cd globalunionpay-upi/backend/user-service        && mvn spring-boot:run
-cd globalunionpay-upi/backend/upi-service         && mvn spring-boot:run
-cd globalunionpay-upi/backend/payment-service     && mvn spring-boot:run
-cd globalunionpay-upi/backend/wallet-service      && mvn spring-boot:run
-cd globalunionpay-upi/backend/transaction-service && mvn spring-boot:run
-cd globalunionpay-upi/backend/notification-service&& mvn spring-boot:run
-cd globalunionpay-upi/backend/fraud-service       && mvn spring-boot:run
-cd globalunionpay-upi/backend/analytics-service   && mvn spring-boot:run
-cd globalunionpay-upi/backend/api-gateway         && mvn spring-boot:run
+# Step 2: Start all backend services
+cd globalunionpay-upi/backend/auth-service         && mvn spring-boot:run &
+cd globalunionpay-upi/backend/user-service         && mvn spring-boot:run &
+cd globalunionpay-upi/backend/upi-service          && mvn spring-boot:run &
+cd globalunionpay-upi/backend/payment-service      && mvn spring-boot:run &
+cd globalunionpay-upi/backend/wallet-service       && mvn spring-boot:run &
+cd globalunionpay-upi/backend/transaction-service  && mvn spring-boot:run &
+cd globalunionpay-upi/backend/notification-service && mvn spring-boot:run &
+cd globalunionpay-upi/backend/fraud-service        && mvn spring-boot:run &
+cd globalunionpay-upi/backend/analytics-service    && mvn spring-boot:run &
+cd globalunionpay-upi/backend/api-gateway          && mvn spring-boot:run
 
-# Start frontend
+# Step 3: Start frontend
 cd globalunionpay-upi/frontend
 npm install && npm run dev
 # → http://localhost:5173
 ```
 
-### Swagger API Docs
+### 📖 Swagger API Docs
 
-| Service | URL |
-|---|---|
-| Auth | http://localhost:8081/swagger-ui.html |
-| User | http://localhost:8082/swagger-ui.html |
-| UPI | http://localhost:8083/swagger-ui.html |
-| Payment | http://localhost:8084/swagger-ui.html |
+| Service | Swagger URL |
+|---------|-------------|
+| Auth Service | http://localhost:8081/swagger-ui.html |
+| User Service | http://localhost:8082/swagger-ui.html |
+| UPI Service | http://localhost:8083/swagger-ui.html |
+| Payment Service | http://localhost:8084/swagger-ui.html |
+| Wallet Service | http://localhost:8085/swagger-ui.html |
 
-### Environment Variables
+### 🔧 Environment Variables
 
 ```env
-MYSQL_ROOT_PASSWORD=your_password
-POSTGRES_PASSWORD=your_password
-JWT_SECRET=your_very_long_secret_key
+# Database
+MYSQL_ROOT_PASSWORD=your_mysql_password
+POSTGRES_PASSWORD=your_postgres_password
+
+# Security
+JWT_SECRET=your_very_long_secret_key_minimum_256_bits
+
+# Payment Gateway
 RAZORPAY_KEY_ID=rzp_live_xxxxx
-RAZORPAY_KEY_SECRET=your_secret
-AWS_EC2_HOST=your_ec2_ip
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+
+# AWS
+AWS_EC2_HOST=your_ec2_public_ip
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_S3_BUCKET=your_bucket_name
+
+# Kafka
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
 ---
 
-## 🛠 Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 
 | Project | Technology |
-|---|---|
-| ATM | React.js, JavaScript, CSS |
-| Bank Portal | React.js, JavaScript, React Router v6, jsPDF |
-| UPI Platform | React 18, TypeScript, Tailwind CSS, Zustand, React Query, Framer Motion, Recharts, Axios, STOMP.js |
+|---------|------------|
+| ATM Simulation | React.js, JavaScript, CSS Animations |
+| Bank Portal | React.js, React Router v6, Context API, jsPDF, Axios |
+| UPI Platform | React 18, TypeScript, Tailwind CSS, Zustand, React Query, Framer Motion, Recharts, STOMP.js, Axios |
 
 ### Backend
 
 | Layer | Technology |
-|---|---|
+|-------|------------|
 | Language | Java 21 |
 | Framework | Spring Boot 3.2 |
-| Security | Spring Security + JWT |
+| Security | Spring Security 6 + JWT (JJWT) |
 | ORM | Spring Data JPA + Hibernate |
 | Messaging | Apache Kafka |
-| Cache | Redis |
-| Batch | Spring Batch |
+| Cache | Redis + Spring Cache |
+| Batch Processing | Spring Batch |
 | WebSocket | Spring WebSocket + STOMP |
-| DB (Bank) | H2 (dev) / MySQL (prod) |
-| DB (UPI Primary) | MySQL 8 |
-| DB (UPI Analytics) | PostgreSQL 15 |
-| Migration | Flyway |
-| Docs | OpenAPI / Swagger 3 |
-| Resilience | Resilience4j Circuit Breaker |
+| Circuit Breaker | Resilience4j |
+| DB — Bank | H2 (dev) / MySQL (prod) |
+| DB — UPI Primary | MySQL 8 |
+| DB — UPI Analytics | PostgreSQL 15 |
+| DB Migration | Flyway |
+| API Docs | OpenAPI 3 / Swagger UI |
+| Build Tool | Maven |
 
 ### DevOps & Cloud
 
 | Tool | Usage |
-|---|---|
-| Docker | Containerization |
-| Kubernetes | Orchestration |
-| GitHub Actions | CI/CD pipeline |
-| AWS EC2 | Compute |
-| AWS RDS | Managed database |
-| AWS S3 | File storage |
+|------|-------|
+| Docker + Docker Compose | Containerization & local orchestration |
+| Kubernetes | Production orchestration |
+| GitHub Actions | CI/CD pipeline automation |
+| AWS EC2 | Application compute |
+| AWS RDS | Managed relational database |
+| AWS S3 | File & document storage |
+| AWS CloudWatch | Monitoring & logging |
 
 ---
 
 ## 🚀 CI/CD Pipeline
 
 ```
-Push to main
-  → GitHub Actions
-  → Maven Build + npm Build
-  → Docker build & push to GHCR
-  → SSH deploy to AWS EC2
+Push to main branch
+       │
+       ▼
+  GitHub Actions
+       │
+       ├── Maven Build (mvn clean package)
+       ├── npm Build (npm run build)
+       ├── Run Unit Tests
+       │
+       ▼
+  Docker Build & Push
+  → GitHub Container Registry (GHCR)
+       │
+       ▼
+  SSH into AWS EC2
+  → docker-compose pull
   → docker-compose up -d
+       │
+       ▼
+  ✅ Live on Production
 ```
 
 ---
 
 ## 👨‍💻 Developer
 
-**Arthikhs** — Full Stack Java Developer
+<div align="center">
 
-- Languages: Java, JavaScript, TypeScript
-- Backend: Spring Boot, Spring Security, Spring Data JPA, Hibernate, REST APIs, JWT, Microservices, Spring Batch, Spring WebSocket
-- Frontend: React.js, Next.js, Tailwind CSS, TypeScript
-- Databases: MySQL, PostgreSQL, Redis
-- Messaging: Apache Kafka
-- Cloud & DevOps: Docker, Kubernetes, AWS (EC2, S3, RDS), GitHub Actions, CI/CD
-- Tools: Git, GitHub, JUnit, Postman, Swagger
+### Arthikhs
+**Full Stack Java Developer**
+
+</div>
+
+| Skill Area | Technologies |
+|------------|-------------|
+| Languages | Java, JavaScript, TypeScript |
+| Backend | Spring Boot, Spring Security, Spring Data JPA, Hibernate, REST APIs, JWT, Microservices, Spring Batch, Spring WebSocket, Kafka |
+| Frontend | React.js, Next.js, TypeScript, Tailwind CSS, Zustand, React Query |
+| Databases | MySQL, PostgreSQL, H2, Redis |
+| Cloud & DevOps | Docker, Kubernetes, AWS (EC2, S3, RDS, CloudWatch), GitHub Actions, CI/CD |
+| Tools | Git, GitHub, Maven, Postman, Swagger, JUnit, Mockito |
 
 ---
 
 ## 📄 License
 
-This project is for educational and portfolio purposes.
+This project is built for **educational and portfolio purposes**.
 
 ---
 
-> Built with ❤️ by **Arthikhs** — Bank Management & Security
+<div align="center">
+
+Built with ❤️ by **[Arthikhs](https://github.com/Arthikhs)**
+
+⭐ Star this repo if you found it useful!
+
+</div>
