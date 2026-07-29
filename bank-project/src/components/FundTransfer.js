@@ -155,7 +155,13 @@ export default function FundTransfer() {
           <label style={labelStyle}>To Account Number</label>
           <input type="text" name="toAccount" placeholder="e.g. ACC9876543210"
             value={form.toAccount} onChange={handle}
-            onBlur={() => lookupAccount(form.toAccount, setToInfo, setToError)}
+            onBlur={() => {
+            if (form.toAccount.trim() && form.toAccount.trim() === form.fromAccount.trim()) {
+              setToInfo(null); setToError('Sender and receiver accounts cannot be the same.');
+            } else {
+              lookupAccount(form.toAccount, setToInfo, setToError);
+            }
+          }}
             required style={inputStyle} />
           {toError && <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: 6 }}>⚠️ {toError}</p>}
           {toInfo && (

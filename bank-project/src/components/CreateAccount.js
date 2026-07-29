@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createAccountApi, getAccountByNumberApi, updateAccountApi, deleteAccountApi } from '../api';
+import { createAccountApi, getAccountByNumberApi, updateAccountApi, deleteAccountApi, getAccountsApi } from '../api';
 
 const emptyForm = {
   fullName: '', motherName: '', fatherName: '', dob: '', phone: '', email: '',
@@ -45,6 +45,22 @@ export default function CreateAccount() {
   const [editDone, setEditDone] = useState(false);
   const [searchError, setSearchError] = useState('');
 
+  const [emailError, setEmailError] = useState('');
+
+  const validateEmail = async (email, currentId = null) => {
+    setEmailError('');
+    if (!email) return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) { setEmailError('Invalid email format.'); return; }
+    try {
+      const res = await getAccountsApi();
+      if (!res.ok) return;
+      const accounts = await res.json();
+      const duplicate = accounts.find(a => a.email === email && a.id !== currentId);
+      if (duplicate) setEmailError('This email is already registered with another account.');
+    } catch {}
+  };
+
   const [deleteSearch, setDeleteSearch] = useState('');
   const [deleteAccInfo, setDeleteAccInfo] = useState(null);
   const [deleteSearchError, setDeleteSearchError] = useState('');
@@ -57,6 +73,7 @@ export default function CreateAccount() {
   const handleCreate = async (e) => {
     e.preventDefault();
     setCreateError('');
+    if (emailError) { setCreateError('Please fix the email error before submitting.'); return; }
     try {
       const res = await createAccountApi(createForm);
       const data = await res.json();
@@ -85,6 +102,7 @@ export default function CreateAccount() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     setEditError('');
+    if (emailError) { setEditError('Please fix the email error before submitting.'); return; }
     try {
       const res = await updateAccountApi(editId, editForm);
       const data = await res.json();
@@ -117,8 +135,13 @@ export default function CreateAccount() {
             </select>
           ) : (
             <input type={f.type} name={f.name} placeholder={f.placeholder || ''}
-              value={form[f.name]} onChange={e => setForm({ ...form, [e.target.name]: e.target.value })}
-              required style={inputStyle} />
+              value={form[f.name]}
+              onChange={e => { setForm({ ...form, [e.target.name]: e.target.value }); if (f.name === 'email') setEmailError(''); }}
+              onBlur={f.name === 'email' ? e => validateEmail(e.target.value, editId) : undefined}
+              required style={{ ...inputStyle, ...(f.name === 'email' && emailError ? { borderColor: '#dc2626' } : {}) }} />
+          )}
+          {f.name === 'email' && emailError && (
+            <p style={{ color: '#dc2626', fontSize: '0.78rem', marginTop: 4, fontWeight: 600 }}>⚠️ {emailError}</p>
           )}
         </div>
       ))}
@@ -179,7 +202,7 @@ export default function CreateAccount() {
 
       <div style={{ display: 'flex', gap: 0, marginBottom: 28, borderBottom: '2px solid #e2e8f0' }}>
         {[{ key: 'create', label: '➕ Create' }, { key: 'edit', label: '✏️ Edit' }, { key: 'delete', label: '🗑️ Delete' }].map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)} style={{
+          <button key={t.key} onClick={() => { setTab(t.key); setEmailError(''); }} style={{
             flex: 1, padding: '12px 0', border: 'none', background: 'none', cursor: 'pointer',
             fontWeight: 700, fontSize: '0.9rem',
             color: tab === t.key ? (t.key === 'delete' ? '#dc2626' : '#1d4ed8') : '#64748b',
