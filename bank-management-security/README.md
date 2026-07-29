@@ -92,7 +92,7 @@ bank-management-security/
 
 ---
 
-## 🏧 Project 1 — ATM Simulation
+## 🏧 ATM Simulation
 
 A realistic ATM machine simulation built with React.js that mimics real ATM behavior.
 
@@ -117,7 +117,7 @@ set PORT=3001 && npm start
 
 ---
 
-## 🏦 Project 2 — Bank Portal
+## 🏦 Bank Portal
 
 A full-stack employee banking portal with React.js frontend and Spring Boot REST API backend, secured with JWT authentication.
 
@@ -174,7 +174,7 @@ npm start
 
 ---
 
-## 💸 Project 3 — GlobalUnionPay UPI Platform
+## 💸 GlobalUnionPay UPI Platform
 
 A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Razorpay — built with **Java 21 Spring Boot Microservices** and **React 18 TypeScript**.
 
