@@ -1,0 +1,25 @@
+# Maven build
+target/
+*.class
+*.jar
+*.war
+
+# Node
+node_modules/
+build/
+dist/
+.env
+.env.local
+
+# H2 Database
+*.mv.db
+*.trace.db
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,67 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8081
+          predicates:
+            - Path=/api/v1/auth/**
+
+        - id: upi-service
+          uri: http://upi-service:8083
+          predicates:
+            - Path=/api/v1/upi/**
+          filters:
+            - AuthenticationFilter
+
+        - id: wallet-service
+          uri: http://wallet-service:8085
+          predicates:
+            - Path=/api/v1/wallet/**
+          filters:
+            - AuthenticationFilter
+
+        - id: payment-service
+          uri: http://payment-service:8084
+          predicates:
+            - Path=/api/v1/payments/**
+          filters:
+            - AuthenticationFilter
+
+        - id: transaction-service
+          uri: http://transaction-service:8086
+          predicates:
+            - Path=/api/v1/transactions/**
+          filters:
+            - AuthenticationFilter
+
+        - id: notification-service
+          uri: http://notification-service:8087
+          predicates:
+            - Path=/api/v1/notifications/**,/ws/**
+          filters:
+            - AuthenticationFilter
+
+        - id: fraud-service
+          uri: http://fraud-service:8088
+          predicates:
+            - Path=/api/v1/fraud/**
+          filters:
+            - AuthenticationFilter
+
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
