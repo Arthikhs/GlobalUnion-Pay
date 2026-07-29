@@ -1,6 +1,8 @@
 node_modules/
-build/
-backend/target/
-backend/data/
 .env
+target/
 *.class
+*.jar
+.DS_Store
+dist/
+build/
