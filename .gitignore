@@ -1,0 +1,6 @@
+node_modules/
+build/
+backend/target/
+backend/data/
+.env
+*.class
