@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 
 // ─── Mock data — no backend needed ────────────────────────────────────────
 const MOCK_ACCOUNTS = {
@@ -130,47 +130,27 @@ export default function ATMMachine() {
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [cardName, setCardName] = useState('');
-  const fileRef = useRef(null);
+  const [cardInput, setCardInput] = useState('');
 
   const reset = () => {
     setScreen('welcome'); setPinInput(''); setAmtInput(''); setAccount(null);
-    setError(''); setLoading(false); setReceipt(null); setCardName('');
-    if (fileRef.current) fileRef.current.value = '';
+    setError(''); setLoading(false); setReceipt(null); setCardInput('');
   };
 
-  // ── File selected ──────────────────────────────────────────────────────
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (fileRef.current) fileRef.current.value = '';
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith('.pdf')) {
-      setError('Please select a PDF file'); return;
-    }
-    const match = file.name.match(/ATM_Card_(ACC\d+)\.pdf/i);
-    if (!match) {
-      setError('Invalid card. Use PDF from "Generate ATM Card"'); return;
-    }
-
-    const accNum = match[1];
-    setCardName(file.name);
+  // ── Card insert ────────────────────────────────────────────────────────
+  const handleInsertCard = async () => {
+    const accNum = cardInput.trim().toUpperCase();
+    if (!accNum) { setError('Enter account number'); return; }
     setError('');
     setScreen('reading');
     setLoading(true);
-
-    try {
-      const res = await fetchAccount(accNum);
-      if (!res.ok) { setError('Card not recognized by bank.'); setScreen('welcome'); setLoading(false); return; }
-      const data = await res.json();
-      setAccount(data);
-      setTransactions(data.transactions || []);
-      setPinInput('');
-      setScreen('pin');
-    } catch {
-      setError('Connection error. Is backend running?');
-      setScreen('welcome');
-    }
+    const res = await fetchAccount(accNum);
+    if (!res.ok) { setError('Card not recognized. Try ACC001 or ACC002'); setScreen('welcome'); setLoading(false); return; }
+    const data = await res.json();
+    setAccount(data);
+    setTransactions(data.transactions || []);
+    setPinInput('');
+    setScreen('pin');
     setLoading(false);
   };
 
@@ -179,6 +159,12 @@ export default function ATMMachine() {
     if (k === 'CANCEL') { reset(); return; }
     if (k === '*' || k === '#') return;
 
+    if (screen === 'welcome') {
+      if (k === 'CLR') { setCardInput(''); setError(''); return; }
+      if (k === 'ENTER') { handleInsertCard(); return; }
+      if (!isNaN(k)) setCardInput(prev => prev + k);
+      return;
+    }
     if (screen === 'pin') {
       if (k === 'CLR') { setPinInput(''); setError(''); return; }
       if (k === 'ENTER') { handlePinEnter(); return; }
@@ -233,35 +219,27 @@ export default function ATMMachine() {
       case 'welcome':
         return (
           <div style={S.screenInner}>
-            <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>💳</div>
+            <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>💳</div>
             <p style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 700, margin: 0, letterSpacing: 1 }}>WELCOME</p>
-            <p style={{ color: '#60a5fa', fontSize: '0.75rem', margin: '8px 0 16px', opacity: 0.8 }}>GlobalUnion Pay ATM</p>
+            <p style={{ color: '#60a5fa', fontSize: '0.72rem', margin: '6px 0 10px', opacity: 0.8 }}>GlobalUnion Pay ATM</p>
 
-            {/* Hidden file input */}
-            <input
-              ref={fileRef} type="file" accept=".pdf"
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
+            <p style={{ color: '#94a3b8', fontSize: '0.65rem', margin: '0 0 4px' }}>Enter Account Number</p>
+            <div style={{ ...S.input, marginTop: 0, fontSize: '0.95rem' }}>
+              {cardInput || <span style={{ color: '#334155' }}>ACC001</span>}
+            </div>
 
             <button
-              style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '11px 32px', marginTop: 0, fontSize: '0.9rem' }}
-              onClick={() => { setError(''); fileRef.current?.click(); }}
+              style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '10px 28px', marginTop: 12, fontSize: '0.85rem' }}
+              onClick={handleInsertCard}
             >
               💳 INSERT CARD
             </button>
 
-            <p style={{ color: '#334155', fontSize: '0.6rem', marginTop: 10, textAlign: 'center' }}>
-              Select your ATM Card PDF
+            <p style={{ color: '#1e3a5f', fontSize: '0.58rem', marginTop: 8, textAlign: 'center' }}>
+              Demo: ACC001 PIN 9876543210 &nbsp;|&nbsp; ACC002 PIN 9123456780
             </p>
 
             {error && <p style={S.error}>{error}</p>}
-
-            <div style={{ marginTop: 12, display: 'flex', gap: 4 }}>
-              {[0,1,2].map(i => (
-                <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: i === 0 ? '#4ade80' : '#1e3a5f' }} />
-              ))}
-            </div>
           </div>
         );
 
