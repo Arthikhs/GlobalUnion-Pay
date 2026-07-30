@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, Tv, Zap, Droplets, Flame, Wifi, Shield, Car, X, CheckCircle2, ArrowRight } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, walletApi } from '../services/api';
 import { useAuthStore } from '../store/store';
+import { useBankBalance } from '../hooks/useBankBalance';
 import toast from 'react-hot-toast';
 
 const categories = [
@@ -107,7 +106,8 @@ const allPlans: Record<string, Record<string, Plan[]>> = {
 
 export default function RechargePage() {
   const { user } = useAuthStore();
-  const queryClient = useQueryClient();
+  const { balance, accountNumber, bankPay } = useBankBalance();
+  const [paying, setPaying] = useState(false);
   const [activeCategory, setActiveCategory] = useState('mobile');
   const [operator, setOperator] = useState('');
   const [number, setNumber] = useState('');
@@ -116,26 +116,20 @@ export default function RechargePage() {
   const [step, setStep] = useState<'form' | 'confirm' | 'success'>('form');
   const [bookedInfo, setBookedInfo] = useState<any>(null);
 
-  const { data: walletData } = useQuery({
-    queryKey: ['wallet', user?.userId],
-    queryFn: () => walletApi.getBalance(user!.userId!).then(r => r.data),
-    enabled: !!user?.userId,
-    refetchInterval: 10000,
-  });
+  const plans = operator ? (allPlans[activeCategory]?.[operator] || []) : [];
 
-  const payMutation = useMutation({
-    mutationFn: (amt: number) => walletApi.deduct(user!.userId!, amt),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallet'] });
+  async function handlePay() {
+    setPaying(true);
+    const result = await bankPay(Number(amount), `${activeCategory.toUpperCase()} - ${operator} - ${number}`);
+    setPaying(false);
+    if (result.success) {
       const plan = operator && selectedPlan !== null ? (allPlans[activeCategory]?.[operator]?.[selectedPlan]) : null;
       setBookedInfo({ category: activeCategory, operator, number, amount, plan });
       setStep('success');
-    },
-    onError: () => toast.error('Payment failed. Check your balance.'),
-  });
-
-  const balance = Number(walletData?.balance || 0);
-  const plans = operator ? (allPlans[activeCategory]?.[operator] || []) : [];
+    } else {
+      toast.error(result.message);
+    }
+  }
 
   function handleReset() {
     setStep('form');
@@ -175,7 +169,7 @@ export default function RechargePage() {
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-gray-900 capitalize">{activeCategory} Recharge</h3>
-            <span className="text-xs text-gray-400">Balance: <span className="font-semibold text-indigo-600">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></span>
+            <span className="text-xs text-gray-400">Bank Balance: <span className="font-semibold text-blue-600">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span></span>
           </div>
 
           <div>
@@ -205,7 +199,7 @@ export default function RechargePage() {
           </div>
 
           {balance < Number(amount) && Number(amount) > 0 && (
-            <p className="text-xs text-red-500 font-medium">⚠️ Insufficient wallet balance.</p>
+            <p className="text-xs text-red-500 font-medium">⚠️ Insufficient bank balance.</p>
           )}
 
           <button
@@ -283,16 +277,16 @@ export default function RechargePage() {
                   <span className="font-bold text-indigo-600 text-lg">₹{Number(amount).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-xs text-gray-400">
-                  <span>Wallet Balance</span>
+                  <span>Bank Balance {accountNumber && `(${accountNumber})`}</span>
                   <span className="text-green-600 font-semibold">₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <button onClick={() => setStep('form')} className="flex-1 py-3 border border-gray-200 rounded-xl text-sm hover:bg-gray-50">Back</button>
-                <button onClick={() => payMutation.mutate(Number(amount))} disabled={payMutation.isPending}
-                  className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 disabled:opacity-50">
-                  {payMutation.isPending ? 'Processing...' : `Pay ₹${Number(amount).toLocaleString('en-IN')}`}
+                <button onClick={handlePay} disabled={paying}
+                  className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50">
+                  {paying ? 'Processing...' : `Pay ₹${Number(amount).toLocaleString('en-IN')}`}
                 </button>
               </div>
             </motion.div>
@@ -329,11 +323,11 @@ export default function RechargePage() {
               </div>
 
               <p className="text-xs text-gray-400 mb-5">
-                New Balance: ₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                New Bank Balance: ₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
               </p>
 
               <button onClick={handleReset}
-                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700">
+                className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700">
                 Recharge Again
               </button>
             </motion.div>

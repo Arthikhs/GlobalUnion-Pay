@@ -42,7 +42,7 @@ public class AccountController {
     @GetMapping("/check-phone")
     public ResponseEntity<?> checkByPhone(@RequestParam String phone) {
         String digits = phone.replaceAll("[^0-9]", "");
-        if (digits.length() == 12) digits = digits.substring(2); // strip 91
+        if (digits.length() > 10) digits = digits.substring(digits.length() - 10);
         String d = digits;
         return accountRepo.findAll().stream()
             .filter(a -> a.getPhone() != null &&
