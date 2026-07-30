@@ -1,8 +1,16 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+
+// ─── Voice ─────────────────────────────────────────────────────────────────
+const speak = (text) => {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-IN'; u.rate = 0.95; u.pitch = 1;
+  window.speechSynthesis.speak(u);
+};
 
 // ─── PIN config ────────────────────────────────────────────────────────────
 const CARD_PIN = '123456';
-const API = 'http://localhost:8080/api';
+const API = 'http://localhost:8090/api';
 
 const fetchAccount = async (accNumber) => {
   try {
@@ -146,6 +154,15 @@ export default function ATMMachine() {
     setError(''); setLoading(false); setReceipt(null); setCardName('');
   };
 
+  // ── Voice triggers per screen ──────────────────────────────────────────
+  useEffect(() => {
+    if (screen === 'welcome') speak('Welcome to GlobalUnion Pay ATM. Please insert your card.');
+    if (screen === 'pin') speak(`Welcome ${account?.fullName?.split(' ')[0] || 'customer'}. Please enter your 6 digit PIN.`);
+    if (screen === 'menu') speak('Please select an option from the menu.');
+    if (screen === 'withdraw') speak('Please enter the amount you wish to withdraw.');
+    if (screen === 'receipt') speak(`Withdrawal successful. You have withdrawn rupees ${receipt?.amount}. Your new balance is rupees ${receipt?.balance}. Please collect your cash and remove your card. Thank you.`);
+  }, [screen]); // eslint-disable-line
+
   // ── File picker ───────────────────────────────────────────────────────
   const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
@@ -200,10 +217,10 @@ export default function ATMMachine() {
 
   const handleWithdraw = async () => {
     const amt = parseFloat(amtInput);
-    if (!amt || amt <= 0) { setError('Enter valid amount'); return; }
+    if (!amt || amt <= 0) { setError('Enter valid amount'); speak('Please enter a valid amount.'); return; }
     const bal = account?.balance ?? 0;
-    if (amt > bal) { setError('Insufficient balance'); return; }
-    if (amt % 100 !== 0) { setError('Amount must be multiple of ₹100'); return; }
+    if (amt > bal) { setError(`Insufficient balance. Available: ₹${bal.toLocaleString('en-IN')}`); speak('Insufficient balance. Please enter a lower amount.'); return; }
+    if (amt % 100 !== 0) { setError('Amount must be multiple of ₹100'); speak('Amount must be in multiples of 100 rupees.'); return; }
     setLoading(true);
     const res = await postWithdraw({
       accountNumber: account.accountNumber,
@@ -212,7 +229,8 @@ export default function ATMMachine() {
       note: 'ATM Cash Withdrawal',
     });
     if (!res.ok) {
-      setError(res.data?.error || 'Withdrawal failed');
+      const errMsg = res.data?.error || 'Withdrawal failed';
+      setError(errMsg); speak('Withdrawal failed. Please try again.');
       setLoading(false);
       return;
     }
@@ -342,6 +360,7 @@ export default function ATMMachine() {
 
             <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
               <button style={{ ...S.btn('#1e3a8a'), marginTop: 0, flex: 1 }} onClick={() => setScreen('menu')}>← BACK</button>
+              <button style={{ ...S.btn('#059669'), marginTop: 0, flex: 1 }} onClick={handleWithdraw} disabled={loading}>✅ WITHDRAW</button>
             </div>
           </div>
         );
@@ -375,22 +394,23 @@ export default function ATMMachine() {
       case 'receipt':
         return (
           <div style={S.screenInner}>
-            <div style={{ fontSize: '2rem', marginBottom: 8 }}>✅</div>
-            <p style={{ color: '#4ade80', fontSize: '0.9rem', fontWeight: 700, margin: 0 }}>TRANSACTION SUCCESSFUL</p>
-            <div style={{ marginTop: 14, width: '100%', background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px' }}>
+            <div style={{ fontSize: '2rem', marginBottom: 6 }}>✅</div>
+            <p style={{ color: '#4ade80', fontSize: '0.9rem', fontWeight: 700, margin: 0 }}>WITHDRAWAL SUCCESSFUL</p>
+            <p style={{ color: '#fbbf24', fontSize: '0.68rem', fontWeight: 600, margin: '6px 0 0', textAlign: 'center' }}>💰 Please collect your cash</p>
+            <div style={{ marginTop: 10, width: '100%', background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px' }}>
               {[
-                { label: 'Type', value: receipt?.type, color: '#e2e8f0' },
-                { label: 'Amount', value: `-₹${receipt?.amount}`, color: '#f87171' },
+                { label: 'Amount Withdrawn', value: `₹${receipt?.amount?.toLocaleString('en-IN')}`, color: '#f87171' },
                 { label: 'New Balance', value: `₹${receipt?.balance?.toLocaleString('en-IN')}`, color: '#4ade80' },
+                { label: 'Date & Time', value: receipt?.time, color: '#94a3b8' },
               ].map((r, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? 6 : 0 }}>
-                  <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}>{r.label}</span>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: i < 2 ? 8 : 0 }}>
+                  <span style={{ color: '#94a3b8', fontSize: '0.68rem' }}>{r.label}</span>
                   <span style={{ color: r.color, fontSize: '0.7rem', fontWeight: 700 }}>{r.value}</span>
                 </div>
               ))}
             </div>
-            <p style={{ color: '#475569', fontSize: '0.6rem', marginTop: 8 }}>{receipt?.time}</p>
-            <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <p style={{ color: '#f87171', fontSize: '0.68rem', fontWeight: 700, marginTop: 10, textAlign: 'center', letterSpacing: 0.5 }}>⬆️ PLEASE REMOVE YOUR CARD</p>
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
               <button style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '8px 16px', marginTop: 0 }}
                 onClick={() => setScreen('menu')}>MENU</button>
               <button style={{ ...S.btn('#dc2626'), width: 'auto', padding: '8px 16px', marginTop: 0 }}
