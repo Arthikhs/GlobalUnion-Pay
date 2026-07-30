@@ -62,7 +62,7 @@ export default function ProfilePage() {
   ] as const;
 
   return (
-    <div className="p-6 space-y-6 max-w-3xl">
+    <div className="p-6 space-y-6 w-full">
       <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
 
       {/* Profile Card */}
