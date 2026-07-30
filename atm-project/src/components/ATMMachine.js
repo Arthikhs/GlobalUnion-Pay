@@ -1,27 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 
-// ─── Mock data — no backend needed ────────────────────────────────────────
-const MOCK_ACCOUNTS_BY_PHONE = {
-  '9876543210': { accountNumber: 'ACC001', fullName: 'Rahul Sharma', phone: '9876543210', balance: 50000, transactions: [
-    { type: 'CREDIT', amount: 10000 }, { type: 'DEBIT', amount: 2000 },
-    { type: 'CREDIT', amount: 5000 }, { type: 'DEBIT', amount: 1500 }, { type: 'CREDIT', amount: 3000 },
-  ]},
-  '9123456780': { accountNumber: 'ACC002', fullName: 'Priya Patel', phone: '9123456780', balance: 75000, transactions: [
-    { type: 'CREDIT', amount: 20000 }, { type: 'DEBIT', amount: 5000 },
-    { type: 'CREDIT', amount: 8000 }, { type: 'DEBIT', amount: 3000 }, { type: 'CREDIT', amount: 1000 },
-  ]},
+// ─── PIN config ────────────────────────────────────────────────────────────
+const CARD_PIN = '123456';
+const API = 'http://localhost:8080/api';
+
+const fetchAccount = async (accNumber) => {
+  try {
+    const res = await fetch(`${API}/accounts/by-number/${accNumber}`);
+    if (res.ok) { const data = await res.json(); return { ok: true, json: async () => data }; }
+    return { ok: false, msg: 'Account not found in bank. Please create account first.' };
+  } catch { return { ok: false, msg: 'Cannot connect to bank server. Make sure backend is running on port 8080.' }; }
 };
 
-const fetchAccountByPhone = async (phone) => {
-  await new Promise(r => setTimeout(r, 800));
-  const acc = MOCK_ACCOUNTS_BY_PHONE[phone];
-  if (!acc) return { ok: false };
-  return { ok: true, json: async () => acc };
+const fetchTransactions = async (accNumber) => {
+  try {
+    const res = await fetch(`${API}/transactions/account/${accNumber}`);
+    if (res.ok) return await res.json();
+  } catch {}
+  return [];
 };
 
-const postWithdraw = async () => {
-  await new Promise(r => setTimeout(r, 600));
-  return { ok: true };
+const postWithdraw = async (body) => {
+  try {
+    const res = await fetch(`${API}/transactions/withdraw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    return { ok: res.ok, data };
+  } catch { return { ok: false, data: { error: 'Connection error' } }; }
 };
 
 // ─── Styles ────────────────────────────────────────────────────────────────
@@ -123,32 +131,45 @@ function Keypad({ onKey }) {
 // ─── ATM Machine ───────────────────────────────────────────────────────────
 export default function ATMMachine() {
   const [screen, setScreen] = useState('welcome');
-
+  const [pinInput, setPinInput] = useState('');
   const [amtInput, setAmtInput] = useState('');
   const [account, setAccount] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [phoneInput, setPhoneInput] = useState('');
+  const [cardName, setCardName] = useState('');
+  const fileRef = useRef();
 
   const reset = () => {
     setScreen('welcome'); setPinInput(''); setAmtInput(''); setAccount(null);
-    setError(''); setLoading(false); setReceipt(null); setPhoneInput('');
+    setError(''); setLoading(false); setReceipt(null); setCardName('');
   };
 
-  // ── Phone lookup ───────────────────────────────────────────────────────
-  const handlePhoneEnter = async () => {
-    if (phoneInput.length !== 10) { setError('Enter 10-digit phone number'); return; }
+  // ── File picker ───────────────────────────────────────────────────────
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const match = file.name.match(/ATM_Card_(ACC[\w]+)\.pdf/i);
+    if (!match) { setError('Card not recognized. Use your ATM card PDF.'); return; }
+    const accNum = match[1];
+    setCardName(file.name);
     setError('');
+    setScreen('reading');
     setLoading(true);
-    const res = await fetchAccountByPhone(phoneInput);
-    if (!res.ok) { setError('No account found for this number'); setLoading(false); return; }
+    const res = await fetchAccount(accNum);
+    if (!res.ok) {
+      setError(res.msg || 'Account not found.');
+      setScreen('welcome');
+      setLoading(false);
+      return;
+    }
     const data = await res.json();
     setAccount(data);
-    setTransactions(data.transactions || []);
-    setPhoneInput('');
-    setScreen('menu');
+    const txns = await fetchTransactions(accNum);
+    setTransactions(txns);
+    setPinInput('');
+    setScreen('pin');
     setLoading(false);
   };
 
@@ -157,18 +178,22 @@ export default function ATMMachine() {
     if (k === 'CANCEL') { reset(); return; }
     if (k === '*' || k === '#') return;
 
-    if (screen === 'phone') {
-      if (k === 'CLR') { setPhoneInput(''); setError(''); return; }
-      if (k === 'ENTER') { handlePhoneEnter(); return; }
-      if (!isNaN(k) && phoneInput.length < 10) setPhoneInput(prev => prev + k);
+    if (screen === 'pin') {
+      if (k === 'CLR') { setPinInput(''); setError(''); return; }
+      if (k === 'ENTER') { handlePinEnter(); return; }
+      if (pinInput.length < 6) setPinInput(prev => prev + k);
       return;
     }
-
     if (screen === 'withdraw') {
       if (k === 'CLR') { setAmtInput(''); setError(''); return; }
       if (k === 'ENTER') { handleWithdraw(); return; }
       setAmtInput(prev => prev + k);
     }
+  };
+
+  const handlePinEnter = () => {
+    if (pinInput === CARD_PIN) { setPinInput(''); setScreen('menu'); }
+    else { setError('Incorrect PIN. Try again.'); setPinInput(''); }
   };
 
 
@@ -180,20 +205,24 @@ export default function ATMMachine() {
     if (amt > bal) { setError('Insufficient balance'); return; }
     if (amt % 100 !== 0) { setError('Amount must be multiple of ₹100'); return; }
     setLoading(true);
-    try {
-      const res = await postWithdraw({
-        accountNumber: account.accountNumber,
-        accountHolder: account.fullName || '',
-
-        amount: amt,
-        note: 'ATM Cash Withdrawal',
-      });
-      if (!res.ok) { setError('Withdrawal failed'); setLoading(false); return; }
-      setAccount(prev => ({ ...prev, balance: bal - amt }));
-      setReceipt({ type: 'Withdrawal', amount: amt, balance: bal - amt, time: new Date().toLocaleString() });
-      setAmtInput('');
-      setScreen('receipt');
-    } catch { setError('Connection error'); }
+    const res = await postWithdraw({
+      accountNumber: account.accountNumber,
+      accountHolder: account.fullName || '',
+      amount: amt,
+      note: 'ATM Cash Withdrawal',
+    });
+    if (!res.ok) {
+      setError(res.data?.error || 'Withdrawal failed');
+      setLoading(false);
+      return;
+    }
+    const newBal = bal - amt;
+    setAccount(prev => ({ ...prev, balance: newBal }));
+    const txns = await fetchTransactions(account.accountNumber);
+    setTransactions(txns);
+    setReceipt({ type: 'Withdrawal', amount: amt, balance: newBal, time: new Date().toLocaleString() });
+    setAmtInput('');
+    setScreen('receipt');
     setLoading(false);
   };
 
@@ -207,35 +236,48 @@ export default function ATMMachine() {
             <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>💳</div>
             <p style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 700, margin: 0, letterSpacing: 1 }}>WELCOME</p>
             <p style={{ color: '#60a5fa', fontSize: '0.72rem', margin: '6px 0 16px', opacity: 0.8 }}>GlobalUnion Pay ATM</p>
-            <p style={{ color: '#94a3b8', fontSize: '0.68rem', margin: '0 0 12px', textAlign: 'center' }}>Please insert your card to continue</p>
+            <p style={{ color: '#94a3b8', fontSize: '0.68rem', margin: '0 0 12px', textAlign: 'center' }}>Please insert your ATM card (PDF)</p>
+            <input ref={fileRef} type="file" accept=".pdf" style={{ display: 'none' }} onChange={handleFileChange} />
             <button
               style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '12px 32px', marginTop: 0, fontSize: '0.9rem' }}
-              onClick={() => { setError(''); setScreen('phone'); }}
+              onClick={() => { setError(''); fileRef.current.click(); }}
             >
               💳 INSERT CARD
             </button>
-            <p style={{ color: '#1e3a5f', fontSize: '0.58rem', marginTop: 10, textAlign: 'center' }}>
-              Demo: 9876543210 &nbsp;|&nbsp; 9123456780
-            </p>
+            {error && <p style={S.error}>{error}</p>}
           </div>
         );
 
-      case 'phone':
+      case 'reading':
+        return (
+          <div style={S.screenInner}>
+            <div style={{ fontSize: '2rem', marginBottom: 12 }}>⏳</div>
+            <p style={{ color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>READING CARD...</p>
+            <p style={{ color: '#475569', fontSize: '0.65rem', marginTop: 8 }}>{cardName}</p>
+          </div>
+        );
+
+      case 'pin':
         return (
           <div style={{ ...S.screenInner, alignItems: 'stretch' }}>
-            <div style={{ textAlign: 'center', marginBottom: 10 }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>📱</div>
-              <p style={{ color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>ENTER PHONE NUMBER</p>
-              <p style={{ color: '#475569', fontSize: '0.62rem', margin: '4px 0 0' }}>Registered mobile number</p>
+            <div style={{ textAlign: 'center', marginBottom: 12 }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>🔐</div>
+              <p style={{ color: '#4ade80', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>
+                Welcome, {account?.fullName?.split(' ')[0] || 'Customer'}
+              </p>
+              <p style={{ color: '#475569', fontSize: '0.65rem', margin: '4px 0 0' }}>{account?.accountNumber}</p>
+              <p style={{ color: '#334155', fontSize: '0.6rem', margin: '6px 0 0' }}>Enter your 6-digit PIN</p>
             </div>
-            <div style={{ ...S.input, fontSize: '1.1rem', letterSpacing: 4, textAlign: 'center' }}>
-              {phoneInput ? '•'.repeat(phoneInput.length) : <span style={{ color: '#334155', letterSpacing: 1 }}>__________</span>}
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, margin: '8px 0' }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} style={{
+                  width: 12, height: 12, borderRadius: '50%',
+                  background: i < pinInput.length ? '#4ade80' : '#1e3a5f',
+                  border: '1px solid #1e3a5f', transition: 'background 0.15s',
+                }} />
+              ))}
             </div>
-            <p style={{ color: '#334155', fontSize: '0.6rem', textAlign: 'center', marginTop: 4 }}>
-              {phoneInput.length}/10 digits
-            </p>
             {error && <p style={S.error}>{error}</p>}
-            {loading && <p style={{ color: '#60a5fa', fontSize: '0.7rem', textAlign: 'center', marginTop: 6 }}>Verifying...</p>}
           </div>
         );
 
