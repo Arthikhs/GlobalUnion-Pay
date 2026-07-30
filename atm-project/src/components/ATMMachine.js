@@ -1,24 +1,28 @@
 import React, { useState, useRef } from 'react';
 
-const BASE = 'http://localhost:8080/api';
+// ─── Mock data — no backend needed ────────────────────────────────────────
+const MOCK_ACCOUNTS = {
+  ACC001: { accountNumber: 'ACC001', fullName: 'Rahul Sharma', phone: '9876543210', balance: 50000, transactions: [
+    { type: 'CREDIT', amount: 10000 }, { type: 'DEBIT', amount: 2000 },
+    { type: 'CREDIT', amount: 5000 }, { type: 'DEBIT', amount: 1500 }, { type: 'CREDIT', amount: 3000 },
+  ]},
+  ACC002: { accountNumber: 'ACC002', fullName: 'Priya Patel', phone: '9123456780', balance: 75000, transactions: [
+    { type: 'CREDIT', amount: 20000 }, { type: 'DEBIT', amount: 5000 },
+    { type: 'CREDIT', amount: 8000 }, { type: 'DEBIT', amount: 3000 }, { type: 'CREDIT', amount: 1000 },
+  ]},
+};
 
-const fetchAccount = (accNumber) =>
-  fetch(`${BASE}/accounts/by-number/${accNumber}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-  });
+const fetchAccount = async (accNumber) => {
+  await new Promise(r => setTimeout(r, 800));
+  const acc = MOCK_ACCOUNTS[accNumber.toUpperCase()];
+  if (!acc) return { ok: false };
+  return { ok: true, json: async () => acc };
+};
 
-const postWithdraw = (data) =>
-  fetch(`${BASE}/transactions/withdraw`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-    },
-    body: JSON.stringify(data),
-  });
+const postWithdraw = async () => {
+  await new Promise(r => setTimeout(r, 600));
+  return { ok: true };
+};
 
 // ─── Styles ────────────────────────────────────────────────────────────────
 const S = {

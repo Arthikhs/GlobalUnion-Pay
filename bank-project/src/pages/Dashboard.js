@@ -26,7 +26,7 @@ function Navbar() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
           </svg>
         </div>
-        <span style={{ color: 'white', fontWeight: 700, fontSize: '1.2rem', letterSpacing: 0.5 }}>SecureBank</span>
+        <span style={{ color: 'white', fontWeight: 700, fontSize: '1.2rem', letterSpacing: 0.5 }}>GlobalUnion Bank</span>
       </div>
       <div style={{ color: 'white', fontWeight: 600, fontSize: '1rem' }}>
         👋 Welcome Back, <span style={{ color: '#bfdbfe' }}>{employeeName}</span>

@@ -47,7 +47,7 @@ export default function LoginPage() {
           </svg>
         </div>
 
-        <h1 className="bank-name">SecureBank</h1>
+        <h1 className="bank-name">GlobalUnion Bank</h1>
         <p className="bank-tagline">Employee Banking Portal</p>
 
       </div>
@@ -138,7 +138,7 @@ export default function LoginPage() {
             <span>Demo credentials:</span>&nbsp; ID: <code>EMP001</code> &nbsp;|&nbsp; Password: <code>bank@1234</code>
           </div>
 
-          <p className="footer-text">© 2025 SecureBank. All rights reserved.</p>
+          <p className="footer-text">© 2025 GlobalUnion Bank. All rights reserved.</p>
         </div>
       </div>
 
