@@ -61,14 +61,14 @@ export default function WalletPage() {
     setSearchError('');
     setFoundUser(null);
     try {
-      const res = await api.get(`/api/v1/users/search?phone=${transferInput}`);
-      const u = res.data;
-      if (u && u.phone !== user?.phone) {
-        setFoundUser(u);
-      } else if (u?.phone === user?.phone) {
+      const res = await api.get(`/api/v1/users/phone/${transferInput}`);
+      const u = res.data?.data;
+      if (u && u.phoneNumber !== user?.phone) {
+        setFoundUser({ fullName: `${u.firstName} ${u.lastName}`, phone: u.phoneNumber, userId: u.userId });
+      } else if (u?.phoneNumber === user?.phone) {
         setSearchError('You cannot send money to yourself.');
       } else {
-        setSearchError('No user found with this number.');
+        setSearchError('No registered user found with this mobile number.');
       }
     } catch {
       setSearchError('No registered user found with this mobile number.');
@@ -79,9 +79,15 @@ export default function WalletPage() {
 
   const payMutation = useMutation({
     mutationFn: (data: { receiverPhone: string; amount: number; type: string }) =>
-      walletApi.deduct(user!.userId!, data.amount),
-    onSuccess: () => {
+      walletApi.transfer(user!.userId!, data.receiverPhone, data.amount),
+    onSuccess: (res) => {
+      const result = res.data;
+      if (!result.success) {
+        toast.error(result.message || 'Transfer failed.');
+        return;
+      }
       queryClient.invalidateQueries({ queryKey: ['wallet'] });
+      queryClient.invalidateQueries({ queryKey: ['balance'] });
       setPaySuccess(true);
     },
     onError: () => toast.error('Transfer failed. Please try again.'),

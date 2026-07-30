@@ -9,6 +9,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -22,8 +23,10 @@ public class WalletService {
     private final WalletRepository walletRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final RestTemplate restTemplate;
 
     private static final String BALANCE_CACHE = "WALLET_BALANCE:";
+    private static final String USER_SERVICE_URL = "http://user-service:8082";
 
     @Transactional
     public Wallet createWallet(String userId) {
@@ -61,6 +64,114 @@ public class WalletService {
         walletRepository.save(wallet);
         redisTemplate.delete(BALANCE_CACHE + userIdLong);
         return true;
+    }
+
+    @Transactional
+    public Map<String, Object> transfer(String senderUserId, String receiverPhone, BigDecimal amount) {
+        // 1. Lookup receiver userId from user-service by phone
+        String receiverUserId;
+        try {
+            Map response = restTemplate.getForObject(
+                USER_SERVICE_URL + "/api/v1/users/phone/" + receiverPhone, Map.class);
+            Map data = (Map) response.get("data");
+            receiverUserId = data.get("userId").toString();
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Receiver not found. Phone number not registered.");
+        }
+
+        Long senderIdLong   = Long.valueOf(senderUserId);
+        Long receiverIdLong = Long.valueOf(receiverUserId);
+
+        if (senderIdLong.equals(receiverIdLong))
+            return Map.of("success", false, "message", "Cannot transfer to yourself.");
+
+        // 2. Lock both wallets
+        Wallet sender = walletRepository.findByUserIdWithLock(senderIdLong)
+                .orElseThrow(() -> new RuntimeException("Sender wallet not found"));
+        Wallet receiver = walletRepository.findByUserIdWithLock(receiverIdLong)
+                .orElseThrow(() -> new RuntimeException("Receiver wallet not found"));
+
+        // 3. Check balance
+        if (sender.getBalance().compareTo(amount) < 0)
+            return Map.of("success", false, "message", "Insufficient balance");
+
+        // 4. Deduct sender, credit receiver
+        sender.setBalance(sender.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
+        walletRepository.save(sender);
+        walletRepository.save(receiver);
+
+        // 5. Invalidate Redis cache for both
+        redisTemplate.delete(BALANCE_CACHE + senderIdLong);
+        redisTemplate.delete(BALANCE_CACHE + receiverIdLong);
+
+        // 6. Publish Kafka event
+        kafkaTemplate.send("payment-success", Map.of(
+            "senderUserId", senderUserId,
+            "receiverUserId", receiverUserId,
+            "receiverPhone", receiverPhone,
+            "amount", amount,
+            "status", "SUCCESS"
+        ));
+
+        log.info("Transfer SUCCESS: ₹{} from {} to {}", amount, senderUserId, receiverPhone);
+        return Map.of("success", true, "message", "Transfer successful",
+                "senderBalance", sender.getBalance(),
+                "amount", amount);
+    }
+
+    @Transactional
+    public Map<String, Object> transfer(String senderUserId, String receiverPhone, BigDecimal amount) {
+        // 1. Lookup receiver userId from user-service by phone
+        String receiverUserId;
+        try {
+            Map response = restTemplate.getForObject(
+                USER_SERVICE_URL + "/api/v1/users/phone/" + receiverPhone, Map.class);
+            Map data = (Map) response.get("data");
+            receiverUserId = data.get("userId").toString();
+        } catch (Exception e) {
+            return Map.of("success", false, "message", "Receiver not found. Phone number not registered.");
+        }
+
+        Long senderIdLong   = Long.valueOf(senderUserId);
+        Long receiverIdLong = Long.valueOf(receiverUserId);
+
+        if (senderIdLong.equals(receiverIdLong))
+            return Map.of("success", false, "message", "Cannot transfer to yourself.");
+
+        // 2. Lock both wallets
+        Wallet sender = walletRepository.findByUserIdWithLock(senderIdLong)
+                .orElseThrow(() -> new RuntimeException("Sender wallet not found"));
+        Wallet receiver = walletRepository.findByUserIdWithLock(receiverIdLong)
+                .orElseThrow(() -> new RuntimeException("Receiver wallet not found"));
+
+        // 3. Check balance
+        if (sender.getBalance().compareTo(amount) < 0)
+            return Map.of("success", false, "message", "Insufficient balance");
+
+        // 4. Deduct sender, credit receiver atomically
+        sender.setBalance(sender.getBalance().subtract(amount));
+        receiver.setBalance(receiver.getBalance().add(amount));
+        walletRepository.save(sender);
+        walletRepository.save(receiver);
+
+        // 5. Invalidate Redis cache for both
+        redisTemplate.delete(BALANCE_CACHE + senderIdLong);
+        redisTemplate.delete(BALANCE_CACHE + receiverIdLong);
+
+        // 6. Publish Kafka event
+        kafkaTemplate.send("payment-success", Map.of(
+            "senderUserId", senderUserId,
+            "receiverUserId", receiverUserId,
+            "receiverPhone", receiverPhone,
+            "amount", amount,
+            "status", "SUCCESS"
+        ));
+
+        log.info("Transfer SUCCESS: \u20b9{} from {} to {}", amount, senderUserId, receiverPhone);
+        return Map.of("success", true, "message", "Transfer successful",
+                "senderBalance", sender.getBalance(),
+                "amount", amount);
     }
 
     // Kafka Consumer — listens to UPI payment events and processes balance transfer

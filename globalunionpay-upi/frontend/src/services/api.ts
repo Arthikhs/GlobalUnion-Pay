@@ -44,6 +44,8 @@ export const walletApi = {
   getBalance: (userId: string) => api.get(`/api/v1/wallets/${userId}/balance`),
   addMoney: (userId: string, amount: number) => api.post(`/api/v1/wallets/${userId}/add-money?amount=${amount}`),
   deduct: (userId: string, amount: number) => api.post(`/api/v1/wallets/${userId}/deduct?amount=${amount}`),
+  transfer: (senderUserId: string, receiverPhone: string, amount: number) =>
+    api.post(`/api/v1/wallets/transfer?senderUserId=${senderUserId}&receiverPhone=${receiverPhone}&amount=${amount}`),
 };
 
 export const userApi = {
