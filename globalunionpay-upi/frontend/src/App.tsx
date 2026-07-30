@@ -12,13 +12,18 @@ import WalletPage from './pages/WalletPage';
 import ProfilePage from './pages/ProfilePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import MerchantPage from './pages/MerchantPage';
-import ContactsPage from './pages/ContactsPage';
 import CardsPage from './pages/CardsPage';
 import RewardsPage from './pages/RewardsPage';
 import RechargePage from './pages/RechargePage';
 import QRPage from './pages/QRPage';
 import FraudPage from './pages/FraudPage';
 import SettingsPage from './pages/SettingsPage';
+import LoansPage from './pages/LoansPage';
+import GoldPage from './pages/GoldPage';
+import InsurancePage from './pages/InsurancePage';
+import MutualFundsPage from './pages/MutualFundsPage';
+import TravelPage from './pages/TravelPage';
+import OffersPage from './pages/OffersPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,13 +57,18 @@ export default function App() {
             <Route path="analytics" element={<AnalyticsPage />} />
             <Route path="merchant" element={<MerchantPage />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="contacts" element={<ContactsPage />} />
             <Route path="cards" element={<CardsPage />} />
             <Route path="rewards" element={<RewardsPage />} />
             <Route path="recharge" element={<RechargePage />} />
             <Route path="qr" element={<QRPage />} />
             <Route path="fraud" element={<FraudPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="loans" element={<LoansPage />} />
+            <Route path="gold" element={<GoldPage />} />
+            <Route path="insurance" element={<InsurancePage />} />
+            <Route path="mutual-funds" element={<MutualFundsPage />} />
+            <Route path="travel" element={<TravelPage />} />
+            <Route path="offers" element={<OffersPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>

@@ -1,34 +1,24 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/store';
 import {
-  LayoutDashboard, Send, QrCode, Users, CreditCard, Receipt,
-  Gift, Building2, BarChart3, Shield, Settings, LogOut,
-  ChevronLeft, ChevronRight, Wallet, Smartphone, ScanLine,
-  ArrowLeftRight, Landmark, FileText, Star, RotateCcw, User
+  LayoutDashboard, Send, Smartphone, Banknote, Coins,
+  Shield, TrendingUp, Plane, Tag, Gift, LogOut,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard', group: 'main' },
-  { icon: Send, label: 'Payments', path: '/payments', group: 'pay' },
-  { icon: QrCode, label: 'UPI', path: '/upi', group: 'pay' },
-  { icon: ScanLine, label: 'Scan & Pay', path: '/qr', group: 'pay' },
-  { icon: ArrowLeftRight, label: 'Transfer', path: '/wallet', group: 'pay' },
-  { icon: Users, label: 'Contacts', path: '/contacts', group: 'pay' },
-  { icon: Landmark, label: 'Bank Accounts', path: '/bank', group: 'pay' },
-  { icon: CreditCard, label: 'Cards', path: '/cards', group: 'pay' },
-  { icon: Receipt, label: 'Transactions', path: '/transactions', group: 'finance' },
-  { icon: Gift, label: 'Rewards', path: '/rewards', group: 'finance' },
-  { icon: Star, label: 'Cashback', path: '/rewards', group: 'finance' },
-  { icon: Smartphone, label: 'Recharge & Bills', path: '/recharge', group: 'finance' },
-  { icon: RotateCcw, label: 'Subscriptions', path: '/recharge', group: 'finance' },
-  { icon: Building2, label: 'Merchant Portal', path: '/merchant', group: 'business' },
-  { icon: BarChart3, label: 'Analytics', path: '/analytics', group: 'business' },
-  { icon: FileText, label: 'Reports', path: '/analytics', group: 'business' },
-  { icon: Shield, label: 'Fraud Detection', path: '/fraud', group: 'business' },
-  { icon: User, label: 'Profile', path: '/profile', group: 'account' },
-  { icon: Settings, label: 'Settings', path: '/settings', group: 'account' },
+  { icon: LayoutDashboard, label: 'Dashboard',        path: '/dashboard',    emoji: '🏠' },
+  { icon: Send,            label: 'Money Transfer',   path: '/wallet',       emoji: '💸' },
+  { icon: Smartphone,      label: 'Recharge & Bills', path: '/recharge',     emoji: '📱' },
+  { icon: Banknote,        label: 'Loans',            path: '/loans',        emoji: '🏦' },
+  { icon: Coins,           label: 'Gold & Metals',    path: '/gold',         emoji: '🥇' },
+  { icon: Shield,          label: 'Insurance',        path: '/insurance',    emoji: '🛡️' },
+  { icon: TrendingUp,      label: 'Mutual Funds',     path: '/mutual-funds', emoji: '📈' },
+  { icon: Plane,           label: 'Travel & Transit', path: '/travel',       emoji: '✈️' },
+  { icon: Tag,             label: 'Offers',           path: '/offers',       emoji: '🎁' },
+  { icon: Gift,            label: 'Rewards',          path: '/rewards',      emoji: '🎉' },
 ];
 
 export default function Sidebar() {
@@ -74,7 +64,10 @@ export default function Sidebar() {
                 }`}
                 whileHover={{ x: 2 }}
               >
-                <item.icon size={18} className={isActive ? 'text-primary-500' : ''} />
+                {collapsed
+                  ? <span className="text-lg">{item.emoji}</span>
+                  : <item.icon size={18} className={isActive ? 'text-primary-500' : ''} />
+                }
                 {!collapsed && (
                   <motion.span
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }}
@@ -116,4 +109,4 @@ export default function Sidebar() {
       </div>
     </motion.aside>
   );
-};
+}

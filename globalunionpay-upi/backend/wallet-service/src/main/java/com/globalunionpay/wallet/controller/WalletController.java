@@ -44,6 +44,16 @@ public class WalletController {
                 "message", success ? "Deducted successfully" : "Insufficient balance"));
     }
 
+    @PostMapping("/transfer")
+    @Operation(summary = "Transfer money between two wallets")
+    public ResponseEntity<Map<String, Object>> transfer(
+            @RequestParam String senderUserId,
+            @RequestParam String receiverPhone,
+            @RequestParam BigDecimal amount) {
+        Map<String, Object> result = walletService.transfer(senderUserId, receiverPhone, amount);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/create/{userId}")
     @Operation(summary = "Create wallet for new user")
     public ResponseEntity<Map<String, Object>> createWallet(@PathVariable String userId) {
