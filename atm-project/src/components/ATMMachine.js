@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 
 // ─── Mock data — no backend needed ────────────────────────────────────────
-const MOCK_ACCOUNTS = {
-  ACC001: { accountNumber: 'ACC001', fullName: 'Rahul Sharma', phone: '9876543210', balance: 50000, transactions: [
+const MOCK_ACCOUNTS_BY_PHONE = {
+  '9876543210': { accountNumber: 'ACC001', fullName: 'Rahul Sharma', phone: '9876543210', balance: 50000, transactions: [
     { type: 'CREDIT', amount: 10000 }, { type: 'DEBIT', amount: 2000 },
     { type: 'CREDIT', amount: 5000 }, { type: 'DEBIT', amount: 1500 }, { type: 'CREDIT', amount: 3000 },
   ]},
-  ACC002: { accountNumber: 'ACC002', fullName: 'Priya Patel', phone: '9123456780', balance: 75000, transactions: [
+  '9123456780': { accountNumber: 'ACC002', fullName: 'Priya Patel', phone: '9123456780', balance: 75000, transactions: [
     { type: 'CREDIT', amount: 20000 }, { type: 'DEBIT', amount: 5000 },
     { type: 'CREDIT', amount: 8000 }, { type: 'DEBIT', amount: 3000 }, { type: 'CREDIT', amount: 1000 },
   ]},
 };
 
-const fetchAccount = async (accNumber) => {
+const fetchAccountByPhone = async (phone) => {
   await new Promise(r => setTimeout(r, 800));
-  const acc = MOCK_ACCOUNTS[accNumber.toUpperCase()];
+  const acc = MOCK_ACCOUNTS_BY_PHONE[phone];
   if (!acc) return { ok: false };
   return { ok: true, json: async () => acc };
 };
@@ -123,34 +123,32 @@ function Keypad({ onKey }) {
 // ─── ATM Machine ───────────────────────────────────────────────────────────
 export default function ATMMachine() {
   const [screen, setScreen] = useState('welcome');
-  const [pinInput, setPinInput] = useState('');
+
   const [amtInput, setAmtInput] = useState('');
   const [account, setAccount] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [transactions, setTransactions] = useState([]);
-  const [cardInput, setCardInput] = useState('');
+  const [phoneInput, setPhoneInput] = useState('');
 
   const reset = () => {
     setScreen('welcome'); setPinInput(''); setAmtInput(''); setAccount(null);
-    setError(''); setLoading(false); setReceipt(null); setCardInput('');
+    setError(''); setLoading(false); setReceipt(null); setPhoneInput('');
   };
 
-  // ── Card insert ────────────────────────────────────────────────────────
-  const handleInsertCard = async () => {
-    const accNum = cardInput.trim().toUpperCase();
-    if (!accNum) { setError('Enter account number'); return; }
+  // ── Phone lookup ───────────────────────────────────────────────────────
+  const handlePhoneEnter = async () => {
+    if (phoneInput.length !== 10) { setError('Enter 10-digit phone number'); return; }
     setError('');
-    setScreen('reading');
     setLoading(true);
-    const res = await fetchAccount(accNum);
-    if (!res.ok) { setError('Card not recognized. Try ACC001 or ACC002'); setScreen('welcome'); setLoading(false); return; }
+    const res = await fetchAccountByPhone(phoneInput);
+    if (!res.ok) { setError('No account found for this number'); setLoading(false); return; }
     const data = await res.json();
     setAccount(data);
     setTransactions(data.transactions || []);
-    setPinInput('');
-    setScreen('pin');
+    setPhoneInput('');
+    setScreen('menu');
     setLoading(false);
   };
 
@@ -159,17 +157,13 @@ export default function ATMMachine() {
     if (k === 'CANCEL') { reset(); return; }
     if (k === '*' || k === '#') return;
 
-    if (screen === 'welcome') {
-      if (k === 'CLR') { setCardInput(''); setError(''); return; }
-      if (k === 'ENTER') { handleInsertCard(); return; }
-      if (!isNaN(k)) setCardInput(prev => prev + k);
+    if (screen === 'phone') {
+      if (k === 'CLR') { setPhoneInput(''); setError(''); return; }
+      if (k === 'ENTER') { handlePhoneEnter(); return; }
+      if (!isNaN(k) && phoneInput.length < 10) setPhoneInput(prev => prev + k);
       return;
     }
-    if (screen === 'pin') {
-      if (k === 'CLR') { setPinInput(''); setError(''); return; }
-      if (k === 'ENTER') { handlePinEnter(); return; }
-      setPinInput(prev => prev + k);
-    }
+
     if (screen === 'withdraw') {
       if (k === 'CLR') { setAmtInput(''); setError(''); return; }
       if (k === 'ENTER') { handleWithdraw(); return; }
@@ -177,16 +171,7 @@ export default function ATMMachine() {
     }
   };
 
-  const handlePinEnter = () => {
-    const phone = account?.phone || account?.phoneNumber || '';
-    if (pinInput === phone) {
-      setPinInput('');
-      setScreen('menu');
-    } else {
-      setError('Incorrect PIN. Try again.');
-      setPinInput('');
-    }
-  };
+
 
   const handleWithdraw = async () => {
     const amt = parseFloat(amtInput);
@@ -221,68 +206,42 @@ export default function ATMMachine() {
           <div style={S.screenInner}>
             <div style={{ fontSize: '2.5rem', marginBottom: 8 }}>💳</div>
             <p style={{ color: '#4ade80', fontSize: '1rem', fontWeight: 700, margin: 0, letterSpacing: 1 }}>WELCOME</p>
-            <p style={{ color: '#60a5fa', fontSize: '0.72rem', margin: '6px 0 10px', opacity: 0.8 }}>GlobalUnion Pay ATM</p>
-
-            <p style={{ color: '#94a3b8', fontSize: '0.65rem', margin: '0 0 4px' }}>Enter Account Number</p>
-            <div style={{ ...S.input, marginTop: 0, fontSize: '0.95rem' }}>
-              {cardInput || <span style={{ color: '#334155' }}>ACC001</span>}
-            </div>
-
+            <p style={{ color: '#60a5fa', fontSize: '0.72rem', margin: '6px 0 16px', opacity: 0.8 }}>GlobalUnion Pay ATM</p>
+            <p style={{ color: '#94a3b8', fontSize: '0.68rem', margin: '0 0 12px', textAlign: 'center' }}>Please insert your card to continue</p>
             <button
-              style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '10px 28px', marginTop: 12, fontSize: '0.85rem' }}
-              onClick={handleInsertCard}
+              style={{ ...S.btn('#1d4ed8'), width: 'auto', padding: '12px 32px', marginTop: 0, fontSize: '0.9rem' }}
+              onClick={() => { setError(''); setScreen('phone'); }}
             >
               💳 INSERT CARD
             </button>
-
-            <p style={{ color: '#1e3a5f', fontSize: '0.58rem', marginTop: 8, textAlign: 'center' }}>
-              Demo: ACC001 PIN 9876543210 &nbsp;|&nbsp; ACC002 PIN 9123456780
+            <p style={{ color: '#1e3a5f', fontSize: '0.58rem', marginTop: 10, textAlign: 'center' }}>
+              Demo: 9876543210 &nbsp;|&nbsp; 9123456780
             </p>
-
-            {error && <p style={S.error}>{error}</p>}
           </div>
         );
 
-      case 'reading':
-        return (
-          <div style={S.screenInner}>
-            <div style={{ fontSize: '2rem', marginBottom: 12 }}>⏳</div>
-            <p style={{ color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>READING CARD...</p>
-            <p style={{ color: '#334155', fontSize: '0.65rem', marginTop: 8, textAlign: 'center', wordBreak: 'break-all' }}>{cardName}</p>
-          </div>
-        );
-
-      case 'pin':
+      case 'phone':
         return (
           <div style={{ ...S.screenInner, alignItems: 'stretch' }}>
-            <div style={{ textAlign: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>🔐</div>
-              <p style={{ color: '#4ade80', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>
-                Welcome, {account?.fullName?.split(' ')[0] || 'Customer'}
-              </p>
-              <p style={{ color: '#475569', fontSize: '0.65rem', margin: '4px 0 0' }}>
-                Card: {account?.accountNumber}
-              </p>
-              <p style={{ color: '#334155', fontSize: '0.6rem', margin: '4px 0 0' }}>
-                Enter PIN (your phone number)
-              </p>
+            <div style={{ textAlign: 'center', marginBottom: 10 }}>
+              <div style={{ fontSize: '1.5rem', marginBottom: 6 }}>📱</div>
+              <p style={{ color: '#60a5fa', fontSize: '0.85rem', fontWeight: 700, margin: 0 }}>ENTER PHONE NUMBER</p>
+              <p style={{ color: '#475569', fontSize: '0.62rem', margin: '4px 0 0' }}>Registered mobile number</p>
             </div>
-
-            {/* PIN dots display */}
-            <div style={{ display: 'flex', justifyContent: 'center', gap: 8, margin: '8px 0' }}>
-              {Array.from({ length: 10 }).map((_, i) => (
-                <div key={i} style={{
-                  width: 10, height: 10, borderRadius: '50%',
-                  background: i < pinInput.length ? '#4ade80' : '#1e3a5f',
-                  border: '1px solid #1e3a5f',
-                  transition: 'background 0.15s',
-                }} />
-              ))}
+            <div style={{ ...S.input, fontSize: '1.1rem', letterSpacing: 4, textAlign: 'center' }}>
+              {phoneInput ? '•'.repeat(phoneInput.length) : <span style={{ color: '#334155', letterSpacing: 1 }}>__________</span>}
             </div>
-
+            <p style={{ color: '#334155', fontSize: '0.6rem', textAlign: 'center', marginTop: 4 }}>
+              {phoneInput.length}/10 digits
+            </p>
             {error && <p style={S.error}>{error}</p>}
+            {loading && <p style={{ color: '#60a5fa', fontSize: '0.7rem', textAlign: 'center', marginTop: 6 }}>Verifying...</p>}
           </div>
         );
+
+
+
+
 
       case 'menu':
         return (
