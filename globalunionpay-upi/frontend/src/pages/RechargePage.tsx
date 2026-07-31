@@ -225,18 +225,28 @@ export default function RechargePage() {
         {/* Plans */}
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-900 mb-4">
-            {operator ? `${operator} Plans` : 'Select operator to see plans'}
+            {operator ? `${operator} Plans` : `${(operators[activeCategory] || [])[0] || ''} Plans`}
           </h3>
-          {plans.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-40 text-gray-300">
-              <span className="text-4xl mb-2">📋</span>
-              <p className="text-sm">No plans loaded</p>
+          {!operator && (
+            <div className="flex gap-2 flex-wrap mb-4">
+              {(operators[activeCategory] || []).map(op => (
+                <button key={op} onClick={() => { setOperator(op); setSelectedPlan(null); setAmount(''); }}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border-2 border-indigo-200 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition">
+                  {op}
+                </button>
+              ))}
             </div>
           )}
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-            {plans.map((plan, i) => (
+            {(operator
+              ? (allPlans[activeCategory]?.[operator] || [])
+              : (allPlans[activeCategory]?.[(operators[activeCategory] || [])[0]] || [])
+            ).map((plan, i) => (
               <motion.div key={i} whileHover={{ scale: 1.01 }}
-                onClick={() => { setSelectedPlan(i); setAmount(String(plan.price)); }}
+                onClick={() => {
+                  if (!operator) setOperator((operators[activeCategory] || [])[0]);
+                  setSelectedPlan(i); setAmount(String(plan.price));
+                }}
                 className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition ${selectedPlan === i ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100 hover:border-indigo-200'}`}>
                 <div>
                   <div className="flex items-center gap-2">
