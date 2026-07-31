@@ -12,12 +12,18 @@
 [![Kafka](https://img.shields.io/badge/Apache_Kafka-231F20?style=for-the-badge&logo=apache-kafka&logoColor=white)](https://kafka.apache.org)
 [![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io)
 [![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com)
+[![License](https://img.shields.io/badge/License-Educational-blue?style=for-the-badge)](./LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/Arthikhs/GlobalUnion-Pay?style=for-the-badge&logo=github)](https://github.com/Arthikhs/GlobalUnion-Pay/stargazers)
 
 <br/>
 
 > Built by **[Arthikhs](https://github.com/Arthikhs)** — Full Stack Java Developer
 >
 > 🔗 **[GlobalUnion-Pay Repository](https://github.com/Arthikhs/GlobalUnion-Pay)**
+
+<br/>
+
+[🏧 ATM Demo](#-atm-simulation) • [🏦 Bank Portal](#-bank-portal) • [💸 UPI Platform](#-globalunionpay-upi-platform) • [🚀 Quick Start](#-quick-start) • [📖 Docs](#-swagger-api-docs)
 
 </div>
 
@@ -33,10 +39,35 @@
 
 ---
 
+## ⚡ Quick Start
+
+```bash
+git clone https://github.com/Arthikhs/GlobalUnion-Pay.git
+cd GlobalUnion-Pay
+```
+
+> See individual project sections below for detailed run instructions.
+
+---
+
+## 🛠️ Prerequisites
+
+Make sure you have the following installed:
+
+| Tool | Version | Download |
+|------|---------|----------|
+| Java | 21+ | [Download](https://adoptium.net) |
+| Node.js | 18+ | [Download](https://nodejs.org) |
+| Maven | 3.9+ | [Download](https://maven.apache.org) |
+| Docker | Latest | [Download](https://www.docker.com) |
+| Git | Latest | [Download](https://git-scm.com) |
+
+---
+
 ## 📁 Repository Structure
 
 ```
-bank-management-security/
+GlobalUnion-Pay/
 │
 ├── 🏧 atm-project/                   ATM Simulation — React Frontend
 │   ├── src/
@@ -195,6 +226,32 @@ A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Raz
 - 📊 Analytics dashboard with Kafka consumer & Recharts visualization
 
 ### 🧩 Microservices Architecture
+
+```
+                        ┌─────────────────┐
+                        │   API Gateway   │  :8080
+                        │  JWT + Routing  │
+                        └────────┬────────┘
+                                 │
+          ┌──────────────────────┼──────────────────────┐
+          │                      │                      │
+   ┌──────▼──────┐       ┌───────▼──────┐      ┌───────▼──────┐
+   │Auth Service │       │ User Service │      │  UPI Service │
+   │   :8081     │       │    :8082     │      │    :8083     │
+   └─────────────┘       └─────────────┘      └─────────────┘
+          │                      │                      │
+   ┌──────▼──────┐       ┌───────▼──────┐      ┌───────▼──────┐
+   │  Payment    │       │   Wallet     │      │ Transaction  │
+   │  Service   │       │   Service    │      │   Service    │
+   │   :8084     │       │    :8085     │      │    :8086     │
+   └─────────────┘       └─────────────┘      └─────────────┘
+          │                      │                      │
+   ┌──────▼──────┐       ┌───────▼──────┐      ┌───────▼──────┐
+   │Notification │       │    Fraud     │      │  Analytics   │
+   │  Service   │       │   Service    │      │   Service    │
+   │   :8087     │       │    :8088     │      │    :8089     │
+   └─────────────┘       └─────────────┘      └─────────────┘
+```
 
 | Service | Port | Responsibility |
 |---------|------|----------------|
@@ -358,12 +415,40 @@ Push to main branch
 
 ---
 
+## 🤝 Contributing
+
+Contributions are welcome! Here's how:
+
+```bash
+# 1. Fork the repository
+# 2. Create your feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Commit your changes
+git commit -m "feat: add your feature"
+
+# 4. Push to your branch
+git push origin feature/your-feature-name
+
+# 5. Open a Pull Request on GitHub
+```
+
+---
+
+## 🐛 Issues & Support
+
+Found a bug or have a feature request? [Open an issue](https://github.com/Arthikhs/GlobalUnion-Pay/issues) on GitHub.
+
+---
+
 ## 👨‍💻 Developer
 
 <div align="center">
 
 ### Arthikhs
 **Full Stack Java Developer**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Arthikhs-181717?style=for-the-badge&logo=github)](https://github.com/Arthikhs)
 
 </div>
 
@@ -388,6 +473,6 @@ This project is built for **educational and portfolio purposes**.
 
 Built with ❤️ by **[Arthikhs](https://github.com/Arthikhs)** | 🔗 **[GlobalUnion-Pay](https://github.com/Arthikhs/GlobalUnion-Pay)**
 
-⭐ Star this repo if you found it useful!
+⭐ **Star this repo if you found it useful!**
 
 </div>
