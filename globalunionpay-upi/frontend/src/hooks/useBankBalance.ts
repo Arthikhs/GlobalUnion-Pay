@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../store/store';
 
-const BANK_API = 'http://localhost:8090/api';
+const BANK_API = '/bank-api';
 
 export function useBankBalance() {
   const { user } = useAuthStore();

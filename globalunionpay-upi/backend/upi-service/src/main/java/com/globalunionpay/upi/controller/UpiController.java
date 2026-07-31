@@ -39,8 +39,12 @@ public class UpiController {
 
     @GetMapping("/validate/phone/{phone}")
     @Operation(summary = "Validate by phone number")
-    public ResponseEntity<UpiValidationResponse> validateByPhone(@PathVariable String phone) {
-        return ResponseEntity.ok(upiService.validateByPhone(phone));
+    public ResponseEntity<?> validateByPhone(@PathVariable String phone) {
+        try {
+            return ResponseEntity.ok(upiService.validateByPhone(phone));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PostMapping("/pay")

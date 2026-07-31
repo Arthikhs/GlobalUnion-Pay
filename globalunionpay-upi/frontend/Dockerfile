@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG VITE_BANK_API_URL=http://localhost:8080/api
+ENV VITE_BANK_API_URL=$VITE_BANK_API_URL
 RUN npm run build
 
 FROM nginx:alpine

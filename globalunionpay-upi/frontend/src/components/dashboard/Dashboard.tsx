@@ -29,8 +29,8 @@ const quickActions = [
 
 export default function Dashboard() {
   const { user, bankName } = useAuthStore();
-  const { balance, accountNumber, raw } = useBankBalance();
-  const balanceLoading = raw === undefined;
+  const { balance, accountNumber, raw, refetch } = useBankBalance();
+  const balanceLoading = false;
   const [showPayModal, setShowPayModal] = useState(false);
   const navigate = useNavigate();
 
@@ -57,13 +57,7 @@ export default function Dashboard() {
           </div>
         </div>
         <div className="mt-4">
-          <p className="text-blue-100 text-sm">Bank Balance</p>
-          <p className="text-4xl font-bold mt-1">
-            {balanceLoading
-              ? <span className="animate-pulse text-2xl">Loading...</span>
-              : `₹${Number(balance).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-            }
-          </p>
+
         </div>
         <div className="flex gap-3 mt-5">
           {quickActions.map((action) => (

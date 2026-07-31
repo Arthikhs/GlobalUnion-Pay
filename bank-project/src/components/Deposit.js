@@ -17,14 +17,15 @@ export default function Deposit() {
   const handle = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleAccNumberBlur = async () => {
-    if (!form.accountNumber.trim()) { setAccInfo(null); return; }
+    const accNum = form.accountNumber.trim();
+    if (!accNum) { setAccInfo(null); return; }
     setAccError('');
     try {
-      const res = await getAccountByNumberApi(form.accountNumber.trim());
+      const res = await getAccountByNumberApi(accNum);
       if (!res.ok) { setAccInfo(null); setAccError('Account not found.'); return; }
       const data = await res.json();
       setAccInfo(data);
-      setForm(f => ({ ...f, accountHolder: data.fullName }));
+      setForm(f => ({ ...f, accountNumber: accNum, accountHolder: data.fullName }));
     } catch { setAccError('Failed to connect to server.'); }
   };
 
@@ -109,9 +110,17 @@ export default function Deposit() {
         {/* Account Number with lookup */}
         <div style={{ marginBottom: 20 }}>
           <label style={labelStyle}>Account Number</label>
-          <input type="text" name="accountNumber" placeholder="e.g. ACC1234567890"
-            value={form.accountNumber} onChange={handle} onBlur={handleAccNumberBlur}
-            required style={inputStyle} />
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input type="text" name="accountNumber" placeholder="e.g. ACC1234567890"
+              value={form.accountNumber}
+              onChange={e => { handle(e); setAccInfo(null); setAccError(''); }}
+              onBlur={handleAccNumberBlur}
+              required style={{ ...inputStyle, flex: 1 }} />
+            <button type="button" onClick={handleAccNumberBlur}
+              style={{ padding: '11px 16px', background: '#1d4ed8', color: 'white', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+              Search
+            </button>
+          </div>
           {accError && <p style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: 6 }}>⚠️ {accError}</p>}
         </div>
 

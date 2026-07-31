@@ -233,6 +233,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_BANK_API_URL=http://host.docker.internal:8080/api
     container_name: globalunionpay-frontend
     ports:
       - "4000:80"
@@ -240,6 +242,8 @@ services:
       - api-gateway
     networks:
       - gup-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   mysql_data:

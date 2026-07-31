@@ -183,9 +183,21 @@ export default function RechargePage() {
 
           <div>
             <label className="text-xs text-gray-500 font-medium">{labelMap[activeCategory] || 'Account / ID'}</label>
-            <input value={number} onChange={e => setNumber(e.target.value)}
+            <input
+              value={number}
+              onChange={e => {
+                const val = activeCategory === 'mobile'
+                  ? e.target.value.replace(/\D/g, '').slice(0, 10)
+                  : e.target.value;
+                setNumber(val);
+              }}
               placeholder={activeCategory === 'mobile' ? '10-digit mobile number' : 'Enter account / ID'}
+              type={activeCategory === 'mobile' ? 'tel' : 'text'}
+              maxLength={activeCategory === 'mobile' ? 10 : undefined}
               className="w-full mt-1 px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300" />
+            {activeCategory === 'mobile' && number.length > 0 && number.length < 10 && (
+              <p className="text-xs text-red-500 mt-1">Enter valid 10-digit mobile number</p>
+            )}
           </div>
 
           <div>
@@ -204,7 +216,7 @@ export default function RechargePage() {
 
           <button
             onClick={() => setStep('confirm')}
-            disabled={!number || !amount || !operator || Number(amount) <= 0 || balance < Number(amount)}
+            disabled={!number || !amount || !operator || Number(amount) <= 0 || (activeCategory === 'mobile' && number.length !== 10)}
             className="w-full py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 transition flex items-center justify-center gap-2">
             Proceed to Pay ₹{amount || '0'} <ArrowRight size={16} />
           </button>

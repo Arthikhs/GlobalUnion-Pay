@@ -14,7 +14,7 @@ const transferOptions = [
   { id: 'globalupi', icon: Wallet,     label: 'GlobalUPI',      desc: 'Pay via GlobalUPI ID / VPA',       color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
 ];
 
-const BANK_API = 'http://localhost:8090/api';
+const BANK_API = '/bank-api';
 
 export default function WalletPage() {
   const { user } = useAuthStore();
@@ -233,16 +233,13 @@ export default function WalletPage() {
                         ))}
                       </div>
                       <div className="mt-3 flex justify-between text-xs">
-                        <span className="text-gray-400">Bank Balance ({accountNumber})</span>
-                        <span className={`font-semibold ${balance<Number(transferAmount)?'text-red-500':'text-green-600'}`}>₹{fmt(balance)}</span>
+                        <span className="text-gray-400">Sending from</span>
+                        <span className="font-semibold text-blue-600">{accountNumber || user?.phone}</span>
                       </div>
-                      {balance < Number(transferAmount) && Number(transferAmount) > 0 && (
-                        <p className="text-xs text-red-500 mt-1">⚠️ Insufficient bank balance.</p>
-                      )}
                       <div className="flex gap-3 mt-4">
                         <button onClick={()=>setStep(1)} className="flex-1 py-3 border border-gray-200 rounded-xl text-sm hover:bg-gray-50">Back</button>
                         <button onClick={handlePay}
-                          disabled={!transferAmount||Number(transferAmount)<=0||balance<Number(transferAmount)||paying}
+                          disabled={!transferAmount||Number(transferAmount)<=0||paying}
                           className="flex-1 py-3 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 disabled:opacity-50">
                           {paying?'Sending...':`Pay ₹${transferAmount||'0'}`}
                         </button>

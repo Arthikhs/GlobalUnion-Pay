@@ -6,7 +6,7 @@ import { authApi } from '../services/api';
 import { useAuthStore } from '../store/store';
 import { ArrowRight, Lock, ShieldCheck, BadgeCheck, Zap, Globe, IndianRupee, ChevronDown, Building2, AlertCircle } from 'lucide-react';
 
-const BANK_API = 'http://localhost:8090/api';
+const BANK_API = '/bank-api';
 
 export default function LoginPage() {
   const navigate = useNavigate();

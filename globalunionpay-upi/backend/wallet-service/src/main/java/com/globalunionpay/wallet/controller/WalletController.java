@@ -19,9 +19,9 @@ public class WalletController {
     private final WalletService walletService;
 
     @GetMapping("/{userId}/balance")
-    @Operation(summary = "Get wallet balance")
+    @Operation(summary = "Get wallet balance — auto creates wallet if not exists")
     public ResponseEntity<Map<String, Object>> getBalance(@PathVariable String userId) {
-        BigDecimal balance = walletService.getBalance(userId);
+        BigDecimal balance = walletService.getOrCreateBalance(userId);
         return ResponseEntity.ok(Map.of("success", true, "userId", userId, "balance", balance, "currency", "INR"));
     }
 
