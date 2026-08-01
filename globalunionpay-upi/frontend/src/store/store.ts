@@ -60,3 +60,31 @@ export const useWalletStore = create<WalletState>((set) => ({
   bankBalance: 0,
   setBalance: (balance) => set({ balance }),
 }));
+
+// ── Real-time Notification Store ──────────────────────────────
+export interface AppNotification {
+  id: string;
+  icon: string;
+  title: string;
+  time: string;
+  read: boolean;
+}
+
+interface NotifState {
+  notifications: AppNotification[];
+  addNotification: (n: Omit<AppNotification, 'id' | 'time' | 'read'>) => void;
+  markAllRead: () => void;
+  clearAll: () => void;
+}
+
+export const useNotifStore = create<NotifState>((set) => ({
+  notifications: [],
+  addNotification: (n) => set((s) => ({
+    notifications: [
+      { ...n, id: Date.now().toString(), time: 'Just now', read: false },
+      ...s.notifications.slice(0, 19),
+    ],
+  })),
+  markAllRead: () => set((s) => ({ notifications: s.notifications.map(n => ({ ...n, read: true })) })),
+  clearAll: () => set({ notifications: [] }),
+}));

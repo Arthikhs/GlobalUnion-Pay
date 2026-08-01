@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, TrendingUp, TrendingDown } from 'lucide-react';
 import { useBankBalance } from '../hooks/useBankBalance';
+import { useNotifStore } from '../store/store';
 import toast from 'react-hot-toast';
 
 const metals = [
@@ -12,6 +13,7 @@ const metals = [
 
 export default function GoldPage() {
   const { balance, accountNumber, bankPay, refetch } = useBankBalance();
+  const { addNotification } = useNotifStore();
   const [selected, setSelected] = useState('gold');
   const [grams, setGrams] = useState('');
   const [paying, setPaying] = useState(false);

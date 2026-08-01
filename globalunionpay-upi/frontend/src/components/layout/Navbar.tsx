@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/store';
+import { useNotifStore } from '../../store/store';
 import { Bell, Search, Sun, Moon, Settings, ChevronDown, User, LogOut, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -10,6 +11,8 @@ const BLUE = 'linear-gradient(135deg, #1D4ED8, #0EA5E9)';
 
 export default function Navbar({ darkMode, toggleDark }: Props) {
   const { user, logout } = useAuthStore();
+  const { notifications, markAllRead, clearAll } = useNotifStore();
+  const unread = notifications.filter(n => !n.read).length;
   const [showProfile, setShowProfile] = useState(false);
   const [showNotif, setShowNotif]     = useState(false);
   const navigate = useNavigate();
@@ -40,10 +43,14 @@ export default function Navbar({ darkMode, toggleDark }: Props) {
 
         {/* Notifications */}
         <div className="relative">
-          <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }}
+          <button onClick={() => { setShowNotif(!showNotif); setShowProfile(false); if (!showNotif) markAllRead(); }}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition relative">
             <Bell size={18} className="text-gray-500" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+            {unread > 0 && (
+              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white text-white text-[9px] flex items-center justify-center font-bold">
+                {unread > 9 ? '9+' : unread}
+              </span>
+            )}
           </button>
           <AnimatePresence>
             {showNotif && (
@@ -53,21 +60,29 @@ export default function Navbar({ darkMode, toggleDark }: Props) {
               >
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-bold text-gray-900 dark:text-white">Notifications</h4>
-                  <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">3 new</span>
-                </div>
-                {[
-                  { title: '₹500 received from Rahul', time: '2 min ago', icon: '💸' },
-                  { title: '10% cashback on recharge',  time: '1 hr ago',  icon: '🎁' },
-                  { title: 'Security alert: New login', time: '3 hr ago',  icon: '🔐' },
-                ].map((n, i) => (
-                  <div key={i} className="flex gap-3 py-2.5 border-b border-gray-50 dark:border-gray-700 last:border-0">
-                    <span className="text-lg">{n.icon}</span>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">{n.title}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    {notifications.length > 0 && (
+                      <button onClick={clearAll} className="text-xs text-red-400 hover:text-red-600">Clear all</button>
+                    )}
+                    {unread > 0 && <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-medium">{unread} new</span>}
                   </div>
-                ))}
+                </div>
+                {notifications.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">
+                    <Bell size={32} className="mx-auto mb-2 opacity-30" />
+                    <p className="text-sm">No notifications yet</p>
+                  </div>
+                ) : (
+                  notifications.map((n) => (
+                    <div key={n.id} className={`flex gap-3 py-2.5 border-b border-gray-50 dark:border-gray-700 last:border-0 ${!n.read ? 'bg-blue-50/50 -mx-2 px-2 rounded-xl' : ''}`}>
+                      <span className="text-lg">{n.icon}</span>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{n.title}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
               </motion.div>
             )}
           </AnimatePresence>

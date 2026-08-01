@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, Tv, Zap, Droplets, Flame, Wifi, Shield, Car, X, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/store';
+import { useNotifStore } from '../store/store';
 import { useBankBalance } from '../hooks/useBankBalance';
 import toast from 'react-hot-toast';
 
@@ -107,6 +108,8 @@ const allPlans: Record<string, Record<string, Plan[]>> = {
 export default function RechargePage() {
   const { user } = useAuthStore();
   const { balance, accountNumber, bankPay } = useBankBalance();
+  const { addNotification } = useNotifStore();
+  const { addNotification } = useNotifStore();
   const [paying, setPaying] = useState(false);
   const [activeCategory, setActiveCategory] = useState('mobile');
   const [operator, setOperator] = useState('');
@@ -123,6 +126,7 @@ export default function RechargePage() {
     const result = await bankPay(Number(amount), `${activeCategory.toUpperCase()} - ${operator} - ${number}`);
     setPaying(false);
     if (result.success) {
+      addNotification({ icon: '📱', title: `${activeCategory.toUpperCase()} recharge ₹${amount} for ${number} successful` });
       const plan = operator && selectedPlan !== null ? (allPlans[activeCategory]?.[operator]?.[selectedPlan]) : null;
       setBookedInfo({ category: activeCategory, operator, number, amount, plan });
       setStep('success');

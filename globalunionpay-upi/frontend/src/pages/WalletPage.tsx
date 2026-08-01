@@ -3,6 +3,7 @@ import { Smartphone, Building2, User, Wallet, X, ArrowRight, CheckCircle2, Searc
 import { useBankBalance } from '../hooks/useBankBalance';
 import { api } from '../services/api';
 import { useAuthStore } from '../store/store';
+import { useNotifStore } from '../store/store';
 import toast from 'react-hot-toast';
 
 interface FoundUser { fullName: string; phone: string; accountNumber?: string; }
@@ -18,6 +19,7 @@ const BANK_API = '/bank-api';
 
 export default function WalletPage() {
   const { user } = useAuthStore();
+  const { addNotification } = useNotifStore();
   const { balance, accountNumber, accountName, bankTransfer, refetch } = useBankBalance();
 
   const [transferModal, setTransferModal] = useState<string | null>(null);
@@ -65,6 +67,7 @@ export default function WalletPage() {
     const result = await bankTransfer(transferInput, Number(transferAmount), 'UPI Transfer');
     setPaying(false);
     if (result.success) {
+      addNotification({ icon: '💸', title: `₹${transferAmount} sent to ${foundUser?.fullName}` });
       setPaySuccess(true);
     } else {
       toast.error(result.message);
