@@ -265,7 +265,7 @@ A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Raz
 | **Notification Service** | 8087 | WebSocket push, Kafka consumer, email/SMS |
 | **Fraud Service** | 8088 | Risk scoring, AOP interceptors, pattern detection |
 | **Analytics Service** | 8089 | Dashboard stats, Kafka consumer, reporting |
-| **Merchant Service** | — | Merchant portal, QR generation, settlements |
+| **Merchant Service** | 8090 | Merchant portal, QR generation, settlements |
 
 ### ▶️ Run — Docker (Recommended)
 
@@ -287,15 +287,16 @@ docker-compose up -d
 docker-compose up -d mysql postgres redis zookeeper kafka
 
 # Step 2: Start all backend services
-cd globalunionpay-upi/backend/auth-service         && mvn spring-boot:run &
-cd globalunionpay-upi/backend/user-service         && mvn spring-boot:run &
-cd globalunionpay-upi/backend/upi-service          && mvn spring-boot:run &
-cd globalunionpay-upi/backend/payment-service      && mvn spring-boot:run &
-cd globalunionpay-upi/backend/wallet-service       && mvn spring-boot:run &
-cd globalunionpay-upi/backend/transaction-service  && mvn spring-boot:run &
-cd globalunionpay-upi/backend/notification-service && mvn spring-boot:run &
-cd globalunionpay-upi/backend/fraud-service        && mvn spring-boot:run &
-cd globalunionpay-upi/backend/analytics-service    && mvn spring-boot:run &
+# Run each in a separate terminal
+cd globalunionpay-upi/backend/auth-service         && mvn spring-boot:run
+cd globalunionpay-upi/backend/user-service         && mvn spring-boot:run
+cd globalunionpay-upi/backend/upi-service          && mvn spring-boot:run
+cd globalunionpay-upi/backend/payment-service      && mvn spring-boot:run
+cd globalunionpay-upi/backend/wallet-service       && mvn spring-boot:run
+cd globalunionpay-upi/backend/transaction-service  && mvn spring-boot:run
+cd globalunionpay-upi/backend/notification-service && mvn spring-boot:run
+cd globalunionpay-upi/backend/fraud-service        && mvn spring-boot:run
+cd globalunionpay-upi/backend/analytics-service    && mvn spring-boot:run
 cd globalunionpay-upi/backend/api-gateway          && mvn spring-boot:run
 
 # Step 3: Start frontend
@@ -325,7 +326,7 @@ POSTGRES_PASSWORD=your_postgres_password
 JWT_SECRET=your_very_long_secret_key_minimum_256_bits
 
 # Payment Gateway
-RAZORPAY_KEY_ID=rzp_live_xxxxx
+RAZORPAY_KEY_ID=rzp_test_xxxxx
 RAZORPAY_KEY_SECRET=your_razorpay_secret
 
 # AWS
