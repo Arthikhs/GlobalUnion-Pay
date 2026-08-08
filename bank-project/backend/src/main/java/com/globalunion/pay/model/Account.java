@@ -25,4 +25,5 @@ public class Account {
     private Double initialDeposit;
     private Double balance;
     private String createdOn;
+    private String profilePicture;
 }

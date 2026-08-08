@@ -30,7 +30,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsSource()))
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/login", "/api/accounts/by-phone/**", "/api/accounts/by-number/**", "/api/accounts/check-phone", "/api/transactions/withdraw", "/api/transactions/**", "/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/api/auth/login", "/api/accounts/by-phone/**", "/api/accounts/by-number/**", "/api/accounts/check-phone", "/api/transactions/withdraw", "/api/transactions/**", "/api/upload/**", "/h2-console/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated()
             )
             .headers(h -> h.frameOptions(f -> f.disable()))
