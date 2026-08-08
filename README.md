@@ -259,7 +259,7 @@ A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Raz
 | **Auth Service** | 8081 | JWT tokens, OTP verification, registration |
 | **User Service** | 8082 | User profile, KYC, referral system |
 | **UPI Service** | 8083 | UPI IDs, VPA management, QR codes |
-| **Payment Service** | 8084 | Payment flow, Razorpay integration, scheduled jobs |
+| **Payment Service** | 8084 | Payment flow, scheduled jobs |
 | **Wallet Service** | 8085 | Balance management, add money, deductions |
 | **Transaction Service** | 8086 | Transaction history, Spring Batch, PostgreSQL |
 | **Notification Service** | 8087 | WebSocket push, Kafka consumer, email/SMS |
@@ -324,10 +324,6 @@ POSTGRES_PASSWORD=your_postgres_password
 
 # Security
 JWT_SECRET=your_very_long_secret_key_minimum_256_bits
-
-# Payment Gateway
-RAZORPAY_KEY_ID=rzp_test_xxxxx
-RAZORPAY_KEY_SECRET=your_razorpay_secret
 
 # AWS
 AWS_EC2_HOST=your_ec2_public_ip
@@ -460,7 +456,7 @@ Found a bug or have a feature request? [Open an issue](https://github.com/Arthik
 | Frontend | React.js, Next.js, TypeScript, Tailwind CSS, Zustand, React Query |
 | Databases | MySQL, PostgreSQL, H2, Redis |
 | Cloud & DevOps | Docker, Kubernetes, AWS (EC2, S3, RDS, CloudWatch), GitHub Actions, CI/CD |
-| Tools | Git, GitHub, Maven, Postman, Swagger, JUnit, Mockito |
+| Tools | Git, GitHub, Maven, Postman, Swagger |
 
 ---
 
