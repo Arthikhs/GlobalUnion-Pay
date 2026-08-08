@@ -20,7 +20,7 @@ A modern, enterprise-grade **Employee Banking Portal & ATM Simulation** built wi
 | Messaging | Apache Kafka |
 | Cloud | AWS (EC2, S3, RDS) |
 | DevOps | Docker, Kubernetes, GitHub Actions, CI/CD |
-| Testing | JUnit, Postman |
+| Testing | JUnit 5, Mockito, Postman |
 | Version Control | Git & GitHub |
 
 ---
@@ -102,6 +102,15 @@ GlobalUnion-Pay/
 │       ├── DataSeeder.java
 │       └── PayApplication.java
 │
+├── backend/src/test/java/com/globalunion/pay/   # 🧪 Tests
+│   ├── controller/
+│   │   ├── AccountControllerTest.java
+│   │   ├── TransactionControllerTest.java
+│   │   ├── LoanControllerTest.java
+│   │   └── AuthControllerTest.java
+│   └── security/
+│       └── JwtUtilTest.java
+│
 ├── public/
 ├── package.json
 └── README.md
@@ -145,6 +154,33 @@ $env:PORT=3001; npm start
 ```
 
 Runs at `http://localhost:3001`
+
+---
+
+## 🧪 Testing
+
+This project uses **JUnit 5** and **Mockito** for backend unit testing.
+
+### Test Coverage
+
+| Test File | Tests | What it covers |
+|-----------|-------|----------------|
+| `AccountControllerTest` | 3 | Duplicate phone, account creation, delete |
+| `TransactionControllerTest` | 4 | Deposit, withdraw, transfer validations |
+| `LoanControllerTest` | 5 | Loan create, close, not found |
+| `AuthControllerTest` | 4 | Login success, wrong password, unknown employee |
+| `JwtUtilTest` | 4 | Token generate, validate, extract employee ID |
+
+**Total: 20 tests**
+
+### Run Tests
+
+```bash
+cd bank-project/backend
+mvn test
+```
+
+> Tests use Mockito mocks — no real database is touched during testing.
 
 ---
 
