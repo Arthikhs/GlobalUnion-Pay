@@ -230,9 +230,16 @@ export default function CustomerDetails() {
           {accounts.map((acc) => (
             <div key={acc.accountNumber} style={card}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <div>
-                  <p style={{ fontWeight: 700, fontSize: '1rem', color: '#1e293b', margin: '0 0 2px' }}>{acc.fullName}</p>
-                  <p style={{ fontFamily: 'monospace', color: '#1d4ed8', fontWeight: 700, fontSize: '0.9rem', margin: 0 }}>{acc.accountNumber}</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <img
+                    src={acc.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(acc.fullName)}&background=1d4ed8&color=fff&size=40`}
+                    alt="profile"
+                    style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '2px solid #e2e8f0' }}
+                  />
+                  <div>
+                    <p style={{ fontWeight: 700, fontSize: '1rem', color: '#1e293b', margin: '0 0 2px' }}>{acc.fullName}</p>
+                    <p style={{ fontFamily: 'monospace', color: '#1d4ed8', fontWeight: 700, fontSize: '0.9rem', margin: 0 }}>{acc.accountNumber}</p>
+                  </div>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <span style={{ background: '#eff6ff', color: '#1d4ed8', fontSize: '0.75rem', fontWeight: 600, padding: '3px 10px', borderRadius: 20 }}>{acc.accountType}</span>
