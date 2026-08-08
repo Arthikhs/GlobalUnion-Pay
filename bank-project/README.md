@@ -18,7 +18,7 @@ A modern, enterprise-grade **Employee Banking Portal & ATM Simulation** built wi
 | Database | H2 (dev), MySQL / PostgreSQL (prod) |
 | Cache | Redis |
 | Messaging | Apache Kafka |
-| Cloud | AWS (EC2, S3, RDS) |
+| Cloud | AWS (EC2, S3, RDS), Cloudinary |
 | DevOps | Docker, Kubernetes, GitHub Actions, CI/CD |
 | Testing | JUnit 5, Mockito, Postman |
 | Version Control | Git & GitHub |
@@ -36,6 +36,7 @@ A modern, enterprise-grade **Employee Banking Portal & ATM Simulation** built wi
 - 🧑‍💼 **Customer Details** — View all customers, full profile, and per-account transaction history
 - 🏛️ **Loan Details** — Issue & manage Education, Business, Vehicle, Agriculture, Property loans with EMI calculator
 - 💳 **Generate ATM Card** — Generate and download ATM card PDF for any customer
+- 🖼️ **Profile Picture Upload** — Upload & update customer profile photo via Cloudinary
 - 📱 **Responsive Design** — Optimized for desktop/laptop
 
 ### 🏧 ATM Project
@@ -84,13 +85,16 @@ GlobalUnion-Pay/
 │
 ├── backend/                      # ☕ Spring Boot Backend
 │   └── src/main/java/com/globalunion/pay/
+│       ├── config/
+│       │   └── CloudinaryConfig.java  # Cloudinary bean
 │       ├── controller/
 │       │   ├── AuthController.java
 │       │   ├── AccountController.java
 │       │   ├── TransactionController.java
-│       │   └── LoanController.java
+│       │   ├── LoanController.java
+│       │   └── UploadController.java  # Profile picture upload
 │       ├── model/
-│       │   ├── Account.java
+│       │   ├── Account.java           # includes profilePicture field
 │       │   ├── Employee.java
 │       │   ├── Transaction.java
 │       │   └── Loan.java
@@ -184,6 +188,34 @@ mvn test
 
 ---
 
+## 🖼️ Profile Picture Upload
+
+Customer profile pictures are stored on **Cloudinary** and the URL is saved in the database.
+
+### How it works
+
+```
+React (file input)
+      ↓
+POST /api/upload/profile/{accountId}
+      ↓
+Cloudinary SDK → uploads image
+      ↓
+Returns secure_url → saved in Account.profilePicture
+      ↓
+Displayed instantly in UI
+```
+
+### Environment Variables
+
+```properties
+cloudinary.cloud-name=your_cloud_name
+cloudinary.api-key=your_api_key
+cloudinary.api-secret=your_api_secret
+```
+
+---
+
 ## 🔑 Demo Credentials
 
 | Field | Value |
@@ -210,6 +242,7 @@ mvn test
 | GET | `/api/loans` | Get all loans |
 | POST | `/api/loans` | Issue loan |
 | PUT | `/api/loans/{id}/close` | Close loan |
+| POST | `/api/upload/profile/{accountId}` | Upload profile picture |
 
 ---
 
