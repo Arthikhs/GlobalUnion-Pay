@@ -94,11 +94,35 @@ export default function CustomerDetails() {
 
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>{selectedAcc.fullName}</h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem' }}>{selectedAcc.accountNumber} · {selectedAcc.accountType}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Profile Picture */}
+          <div style={{ position: 'relative' }}>
+            <img
+              src={selectedAcc.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedAcc.fullName)}&background=1d4ed8&color=fff&size=80`}
+              alt="profile"
+              style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '3px solid #e2e8f0' }}
+            />
+            <label style={{ position: 'absolute', bottom: 0, right: 0, background: '#1d4ed8', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <span style={{ color: 'white', fontSize: 12 }}>✏️</span>
+              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await fetch(`http://localhost:8090/api/upload/profile/${selectedAcc.id}`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.url) {
+                  setSelectedAcc(prev => ({ ...prev, profilePicture: data.url }));
+                  load();
+                }
+              }} />
+            </label>
+          </div>
+          <div>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1e293b', marginBottom: 4 }}>{selectedAcc.fullName}</h2>
+            <p style={{ color: '#64748b', fontSize: '0.9rem' }}>{selectedAcc.accountNumber} · {selectedAcc.accountType}</p>
+          </div>
         </div>
-
       </div>
 
       {/* Full Info Card */}
