@@ -415,6 +415,32 @@ cloudinary.api-key=your_api_key
 cloudinary.api-secret=your_api_secret
 ```
 
+### How Cloudinary URLs Are Stored in Database
+
+**Cloudinary does not store images in your database — it stores them on its own CDN. Your database only stores the URL string that Cloudinary returns after upload.**
+
+| Project | Entity | Field | DB Column |
+|---------|--------|-------|-----------|
+| Bank Portal | `Account` | `profilePicture` | `VARCHAR` |
+| UPI Platform | `UserProfile` | `profileImageUrl` | `VARCHAR` |
+| UPI Platform | `Merchant` | `logoUrl` | `VARCHAR` |
+
+### Flow
+
+```
+User picks image
+      ↓
+React sends file to Spring Boot
+      ↓
+Spring Boot uploads to Cloudinary
+      ↓
+Cloudinary returns a URL
+      ↓
+Spring Boot saves URL to DB (MySQL)
+      ↓
+Frontend fetches URL from DB → displays image
+```
+
 ### Upload Service (Spring Boot)
 
 ```java
@@ -437,6 +463,28 @@ public class CloudinaryService {
         return result.get("url").toString();
     }
 }
+```
+
+### Save URL to Database
+
+```java
+// Bank Portal
+account.setProfilePicture(url);
+accountRepository.save(account);
+
+// UPI — User
+userProfile.setProfileImageUrl(url);
+userProfileRepository.save(userProfile);
+
+// UPI — Merchant
+merchant.setLogoUrl(url);
+merchantRepository.save(merchant);
+```
+
+### Display in Frontend
+
+```js
+<img src={account.profilePicture} alt="profile" />
 ```
 
 ### Environment Variable
