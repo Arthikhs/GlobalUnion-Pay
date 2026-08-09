@@ -385,6 +385,69 @@ REDIS_PORT=6379
 
 ---
 
+## 🖼️ Cloudinary Image Management
+
+Cloudinary is used for image uploads and transformations across the projects.
+
+### Where It's Used
+
+| Project | Usage | Transformation |
+|---------|-------|----------------|
+| **Bank Portal** | Customer profile photos, loan documents | `fit` — preserves aspect ratio, no crop |
+| **UPI Platform** | Merchant logos, QR code thumbnails | `fill` — crops to exact size, fills frame |
+| **ATM Simulation** | Not applicable | — |
+
+### Transformations
+
+| Type | Behavior | Used In |
+|------|----------|---------|
+| `fill` | Crops & fills exact dimensions | UPI merchant logos |
+| `fit` | Keeps aspect ratio, no cropping | Bank Portal profile photos |
+| `scale` | Stretches to exact size (no crop) | Not used |
+
+### Setup (application.properties)
+
+```properties
+cloudinary.cloud-name=your_cloud_name
+cloudinary.api-key=your_api_key
+cloudinary.api-secret=your_api_secret
+```
+
+### Upload Service (Spring Boot)
+
+```java
+@Service
+public class CloudinaryService {
+    @Autowired
+    private Cloudinary cloudinary;
+
+    // Bank Portal — fit (profile photos, documents)
+    public String uploadFit(MultipartFile file) throws IOException {
+        Map result = cloudinary.uploader().upload(file.getBytes(),
+            ObjectUtils.asMap("transformation", "c_fit,w_300,h_300"));
+        return result.get("url").toString();
+    }
+
+    // UPI Platform — fill (merchant logos, thumbnails)
+    public String uploadFill(MultipartFile file) throws IOException {
+        Map result = cloudinary.uploader().upload(file.getBytes(),
+            ObjectUtils.asMap("transformation", "c_fill,w_200,h_200"));
+        return result.get("url").toString();
+    }
+}
+```
+
+### Environment Variable
+
+```env
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+---
+
 ## 🚀 CI/CD Pipeline
 
 ```
