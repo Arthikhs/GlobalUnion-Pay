@@ -404,6 +404,8 @@ Cloudinary is used for image uploads and transformations across the projects.
 | `fill` | Crops & fills exact dimensions | UPI merchant logos |
 | `fit` | Keeps aspect ratio, no cropping | Bank Portal profile photos |
 | `scale` | Stretches to exact size (no crop) | Not used |
+| `q_auto` | Auto-selects best image quality, reduces file size | Both Bank Portal & UPI Platform |
+| `f_auto` | Auto-selects best format (WebP, AVIF, etc.) | Both Bank Portal & UPI Platform |
 
 ### Setup (application.properties)
 
@@ -421,17 +423,17 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    // Bank Portal — fit (profile photos, documents)
+    // Bank Portal — fit + q_auto + f_auto (profile photos, documents)
     public String uploadFit(MultipartFile file) throws IOException {
         Map result = cloudinary.uploader().upload(file.getBytes(),
-            ObjectUtils.asMap("transformation", "c_fit,w_300,h_300"));
+            ObjectUtils.asMap("transformation", "c_fit,w_300,h_300,q_auto,f_auto"));
         return result.get("url").toString();
     }
 
-    // UPI Platform — fill (merchant logos, thumbnails)
+    // UPI Platform — fill + q_auto + f_auto (merchant logos, thumbnails)
     public String uploadFill(MultipartFile file) throws IOException {
         Map result = cloudinary.uploader().upload(file.getBytes(),
-            ObjectUtils.asMap("transformation", "c_fill,w_200,h_200"));
+            ObjectUtils.asMap("transformation", "c_fill,w_200,h_200,q_auto,f_auto"));
         return result.get("url").toString();
     }
 }
