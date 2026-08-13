@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gup-config
+  namespace: globalunionpay
+data:
+  SPRING_DATASOURCE_URL_MYSQL: "jdbc:mysql://mysql:3306/globalunionpay?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true"
+  SPRING_DATASOURCE_URL_POSTGRES: "jdbc:postgresql://postgres:5432/transactions_db"
+  SPRING_DATASOURCE_USERNAME_MYSQL: "root"
+  SPRING_DATASOURCE_USERNAME_POSTGRES: "postgres"
+  SPRING_REDIS_HOST: "redis"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  SPRING_PROFILES_ACTIVE: "docker"
