@@ -1,0 +1,235 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upi-service
+  namespace: globalunionpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upi-service
+  template:
+    metadata:
+      labels:
+        app: upi-service
+    spec:
+      containers:
+        - name: upi-service
+          image: ghcr.io/arthikhs/globalunionpay-upi-service:latest
+          ports:
+            - containerPort: 8083
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_URL_MYSQL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_USERNAME_MYSQL
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gup-secrets
+                  key: mysql-root-password
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: upi-service
+  namespace: globalunionpay
+spec:
+  selector:
+    app: upi-service
+  ports:
+    - port: 8083
+      targetPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: globalunionpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: ghcr.io/arthikhs/globalunionpay-payment-service:latest
+          ports:
+            - containerPort: 8084
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_URL_MYSQL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_USERNAME_MYSQL
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gup-secrets
+                  key: mysql-root-password
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: globalunionpay
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - port: 8084
+      targetPort: 8084
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-service
+  namespace: globalunionpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallet-service
+  template:
+    metadata:
+      labels:
+        app: wallet-service
+    spec:
+      containers:
+        - name: wallet-service
+          image: ghcr.io/arthikhs/globalunionpay-wallet-service:latest
+          ports:
+            - containerPort: 8085
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_URL_MYSQL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_USERNAME_MYSQL
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gup-secrets
+                  key: mysql-root-password
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-service
+  namespace: globalunionpay
+spec:
+  selector:
+    app: wallet-service
+  ports:
+    - port: 8085
+      targetPort: 8085
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fraud-service
+  namespace: globalunionpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fraud-service
+  template:
+    metadata:
+      labels:
+        app: fraud-service
+    spec:
+      containers:
+        - name: fraud-service
+          image: ghcr.io/arthikhs/globalunionpay-fraud-service:latest
+          ports:
+            - containerPort: 8088
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_URL_MYSQL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_USERNAME_MYSQL
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gup-secrets
+                  key: mysql-root-password
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-service
+  namespace: globalunionpay
+spec:
+  selector:
+    app: fraud-service
+  ports:
+    - port: 8088
+      targetPort: 8088
