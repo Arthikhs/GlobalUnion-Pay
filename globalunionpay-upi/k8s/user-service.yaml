@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: globalunionpay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: ghcr.io/arthikhs/globalunionpay-user-service:latest
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_URL_MYSQL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_DATASOURCE_USERNAME_MYSQL
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gup-secrets
+                  key: mysql-root-password
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gup-config
+                  key: SPRING_REDIS_HOST
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: globalunionpay
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 8082
+      targetPort: 8082
