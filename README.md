@@ -261,7 +261,7 @@ A production-grade UPI payment platform inspired by PhonePe, Google Pay, and Raz
 | **UPI Service** | 8083 | UPI IDs, VPA management, QR codes |
 | **Payment Service** | 8084 | Payment flow, scheduled jobs |
 | **Wallet Service** | 8085 | Balance management, add money, deductions |
-| **Transaction Service** | 8086 | Transaction history, Spring Batch, PostgreSQL |
+| **Transaction Service** | 8086 | Transaction history, Spring Batch, MySQL |
 | **Notification Service** | 8087 | WebSocket push, Kafka consumer, email/SMS |
 | **Fraud Service** | 8088 | Risk scoring, AOP interceptors, pattern detection |
 | **Analytics Service** | 8089 | Dashboard stats, Kafka consumer, reporting |
@@ -284,7 +284,7 @@ docker-compose up -d
 
 ```bash
 # Step 1: Start infrastructure
-docker-compose up -d mysql postgres redis zookeeper kafka
+docker-compose up -d mysql redis zookeeper kafka
 
 # Step 2: Start all backend services
 # Run each in a separate terminal
@@ -320,7 +320,6 @@ npm install && npm run dev
 ```env
 # Database
 MYSQL_ROOT_PASSWORD=your_mysql_password
-POSTGRES_PASSWORD=your_postgres_password
 
 # Security
 JWT_SECRET=your_very_long_secret_key_minimum_256_bits
@@ -365,8 +364,7 @@ REDIS_PORT=6379
 | WebSocket | Spring WebSocket + STOMP |
 | Circuit Breaker | Resilience4j |
 | DB — Bank | H2 (dev) / MySQL (prod) |
-| DB — UPI Primary | MySQL 8 |
-| DB — UPI Analytics | PostgreSQL 15 |
+| DB — UPI | MySQL 8 |
 | DB Migration | Flyway |
 | API Docs | OpenAPI 3 / Swagger UI |
 | Build Tool | Maven |
@@ -567,7 +565,7 @@ Found a bug or have a feature request? [Open an issue](https://github.com/Arthik
 | Languages | Java, JavaScript, TypeScript |
 | Backend | Spring Boot, Spring Security, Spring Data JPA, Hibernate, REST APIs, JWT, Microservices, Spring Batch, Spring WebSocket, Kafka |
 | Frontend | React.js, Next.js, TypeScript, Tailwind CSS, Zustand, React Query |
-| Databases | MySQL, PostgreSQL, H2, Redis |
+| Databases | MySQL, H2, Redis |
 | Cloud & DevOps | Docker, Kubernetes, AWS (EC2, S3, RDS, CloudWatch), GitHub Actions, CI/CD |
 | Tools | Git, GitHub, Maven, Postman, Swagger |
 

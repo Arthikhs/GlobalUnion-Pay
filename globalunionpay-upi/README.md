@@ -128,7 +128,7 @@ globalunionpay-upi/
 | WebSocket | Spring WebSocket + STOMP |
 | Circuit Breaker | Resilience4j |
 | DB — Primary | MySQL 8 |
-| DB — Analytics | PostgreSQL 15 |
+| DB — Analytics | MySQL 8 |
 | DB Migration | Flyway |
 | API Docs | OpenAPI 3 / Swagger UI |
 | Build Tool | Maven |
@@ -186,7 +186,7 @@ docker-compose up -d
 
 ```bash
 # Step 1 — Start infrastructure
-docker-compose up -d mysql postgres redis zookeeper kafka
+docker-compose up -d mysql redis zookeeper kafka
 
 # Step 2 — Start backend services
 cd backend/auth-service         && mvn spring-boot:run &
@@ -224,7 +224,6 @@ npm install && npm run dev
 | Fraud Service | 8088 |
 | Analytics Service | 8089 |
 | MySQL | 3306 |
-| PostgreSQL | 5432 |
 | Redis | 6379 |
 | Kafka | 9092 |
 | Kafka UI | 9000 |
@@ -248,7 +247,6 @@ npm install && npm run dev
 ```env
 # Database
 MYSQL_ROOT_PASSWORD=your_mysql_password
-POSTGRES_PASSWORD=your_postgres_password
 
 # Security
 JWT_SECRET=your_very_long_secret_key_minimum_256_bits
