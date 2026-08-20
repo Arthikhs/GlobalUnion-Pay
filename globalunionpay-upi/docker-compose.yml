@@ -15,20 +15,6 @@ services:
     networks:
       - gup-network
 
-  postgres:
-    image: postgres:15
-    container_name: globalunionpay-postgres
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres1234
-      POSTGRES_DB: transactions_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - gup-network
-
   redis:
     image: redis:7-alpine
     container_name: globalunionpay-redis
@@ -182,12 +168,12 @@ services:
     ports:
       - "8086:8086"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/transactions_db
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres1234
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/globalunionpay?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root1234
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     depends_on:
-      - postgres
+      - mysql
       - kafka
     networks:
       - gup-network
@@ -247,7 +233,6 @@ services:
 
 volumes:
   mysql_data:
-  postgres_data:
 
 networks:
   gup-network:
